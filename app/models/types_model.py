@@ -1,6 +1,4 @@
-from sqlalchemy.sql.schema import ForeignKey
 from app.configs.database import db
-from sqlalchemy import Column, String, Integer
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
 
@@ -12,10 +10,10 @@ class TypeModel(db.Model):
     
     __tablename__ = 'types'
     
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True, nullable=False)
     
-    class_id = Column(Integer, ForeignKey('classes.id'))
+    class_id = db.Column(db.Integer, db.ForeignKey('classes.id'))
     
     @validates('name, email')
     def validate_values(self, key, value: str):

@@ -1,7 +1,5 @@
-from sqlalchemy.orm.mapper import validates
-from sqlalchemy.sql.schema import ForeignKey
+from sqlalchemy.orm import validates
 from app.configs.database import db
-from sqlalchemy import Column, String, Integer
 from dataclasses import dataclass
 
 @dataclass
@@ -11,10 +9,10 @@ class ClassModel(db.Model):
     
     __tablename__ = 'classes'
     
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True, nullable=False)
     
-    admin_id = Column(Integer, ForeignKey('users_admin.id'))
+    admin_id = db.Column(db.Integer, db.ForeignKey('users_admin.id'))
     
     @validates('name, email')
     def validate_values(self, key, value: str):

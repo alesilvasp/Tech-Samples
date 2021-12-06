@@ -1,6 +1,4 @@
-from sqlalchemy.sql.schema import ForeignKey
 from app.configs.database import db
-from sqlalchemy import Column, String, Integer
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
 
@@ -15,14 +13,14 @@ class ParameterModel(db.Model):
 
     __tablename__ = 'parameters'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    unity = Column(String, nullable=False)
-    min = Column(String, nullable=False)
-    max = Column(String, nullable=False)
-    result = Column(String)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    unity = db.Column(db.String, nullable=False)
+    min = db.Column(db.String, nullable=False)
+    max = db.Column(db.String, nullable=False)
+    result = db.Column(db.String)
 
-    type_id = Column(Integer, ForeignKey('types.id'))
+    type_id = db.Column(db.Integer, db.ForeignKey('types.id'))
 
     @validates('name')
     def validate_values(self, key, value: str):

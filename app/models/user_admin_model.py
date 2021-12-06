@@ -1,7 +1,6 @@
 from app.configs.database import db
-from sqlalchemy import Column, String, Integer
 from dataclasses import dataclass
-from sqlalchemy.orm import relationship, validates
+from sqlalchemy.orm import validates
 
 
 @dataclass
@@ -12,11 +11,11 @@ class UserAdminModel(db.Model):
 
     __tablename__ = 'users_admin'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    email = Column(String, unique=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, unique=True, nullable=False)
 
-    admin = relationship("ClassModel", backref='admin', uselist=False)
+    classes = db.relationship("ClassModel", backref='admin', uselist=False)
 
     @validates('name, email')
     def validate_values(self, key, value: str):
