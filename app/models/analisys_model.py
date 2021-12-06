@@ -1,7 +1,7 @@
 from app.configs.database import db
 from dataclasses import dataclass
-from datetime import datetime
 from sqlalchemy.orm import validates
+from datetime import datetime
 
 
 @dataclass
@@ -19,6 +19,8 @@ class AnalisysModel(db.Model):
     made = db.Column(db.DateTime)
     category = db.Column(db.String, nullable=False)
     is_concluded = db.Column(db.Boolean)
+    
+    class_id = db.Column(db.Integer, db.ForeignKey('classes.id'))
 
     analist_id = db.Column(db.Integer, db.ForeignKey('users_analists.id'))
 
