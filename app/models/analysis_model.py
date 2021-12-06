@@ -5,14 +5,14 @@ from datetime import datetime
 
 
 @dataclass
-class AnalisysModel(db.Model):
+class AnalysisModel(db.Model):
     id: int
     batch: str
     made: datetime
     category: str
     is_concluded: bool
 
-    __tablename__ = 'analisys'
+    __tablename__ = 'analysis'
 
     id = db.Column(db.Integer, primary_key=True)
     batch = db.Column(db.String, unique=True, nullable=False)
@@ -22,7 +22,7 @@ class AnalisysModel(db.Model):
     
     class_id = db.Column(db.Integer, db.ForeignKey('classes.id'))
 
-    analist_id = db.Column(db.Integer, db.ForeignKey('users_analists.id'))
+    analyst_id = db.Column(db.Integer, db.ForeignKey('users_analysts.id'))
 
     @validates('category')
     def validate_values(self, key, value: str):

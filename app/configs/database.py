@@ -9,9 +9,9 @@ def init_app(app: Flask):
 
     app.db = db
 
-    from app.models.analisys_model import AnalisysModel
+    from app.models.analysis_model import AnalysisModel
     from app.models.classes_model import ClassModel
     from app.models.parameters_model import ParameterModel
     from app.models.types_model import TypeModel
     from app.models.user_admin_model import UserAdminModel
-    from app.models.user_analist_model import UserAnalistModel
+    from app.models.user_analyst_model import UserAnalystModel
