@@ -2,6 +2,10 @@ from app.configs.database import db
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
 
+from app.exceptions import (
+    InvalidInputDataError
+)
+
 @dataclass
 class ParameterModel(db.Model):
     id: int
@@ -21,6 +25,25 @@ class ParameterModel(db.Model):
     result = db.Column(db.String)
 
     type_id = db.Column(db.Integer, db.ForeignKey('types.id'))
+
+    @classmethod
+    def check_data(cls, **req_data):
+        keys = [
+            "name",
+            "unity",
+            "min",
+            "max",
+            "result",
+            "type_id"
+        ]
+
+        for key in req_data:
+            if key not in keys or req_data[key] != str:
+
+                raise InvalidInputDataError
+        
+        ...
+            
 
     @validates('name')
     def validate_values(self, key, value: str):
