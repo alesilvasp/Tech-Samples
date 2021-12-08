@@ -34,7 +34,6 @@ class ParameterModel(db.Model):
             "min",
             "max",
             "result",
-            "type_id"
         ]
 
         for key in req_data:

@@ -17,3 +17,15 @@ class ParametersNotFoundError(Exception):
         }, 404
 
         super().__init__(self.message)
+
+class InvalidUpdateDataError(Exception):
+
+    def __init__(self):
+
+        self.message = {
+            "error": "Invalid update data"
+        }, 400
+
+        super().__init__(self.message)
+
+
