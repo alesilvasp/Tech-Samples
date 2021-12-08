@@ -6,7 +6,7 @@ from sqlalchemy.orm import validates
 class ParameterModel(db.Model):
     id: int
     name: str
-    unity: str
+    unit: str
     min: str
     max: str
     result: str
@@ -15,7 +15,7 @@ class ParameterModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    unity = db.Column(db.String, nullable=False)
+    unit = db.Column(db.String, nullable=False) #unit
     min = db.Column(db.String, nullable=False)
     max = db.Column(db.String, nullable=False)
     result = db.Column(db.String)
