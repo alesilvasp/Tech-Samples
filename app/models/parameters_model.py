@@ -3,14 +3,15 @@ from dataclasses import dataclass
 from sqlalchemy.orm import validates
 
 from app.exceptions import (
-    InvalidInputDataError
+    InvalidInputDataError,
+    InvalidDataTypeError
 )
 
 @dataclass
 class ParameterModel(db.Model):
     id: int
     name: str
-    unity: str
+    unit: str
     min: str
     max: str
     result: str
@@ -19,7 +20,7 @@ class ParameterModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    unity = db.Column(db.String, nullable=False)
+    unit = db.Column(db.String, nullable=False) #unit
     min = db.Column(db.String, nullable=False)
     max = db.Column(db.String, nullable=False)
     result = db.Column(db.String)
@@ -28,22 +29,58 @@ class ParameterModel(db.Model):
 
     @classmethod
     def check_data(cls, **req_data):
-        keys = [
+        valid_post = [
             "name",
-            "unity",
+            "unit",
             "min",
             "max",
-            "result",
+            "type_id"
         ]
 
         for key in req_data:
-            if key not in keys or req_data[key] != str:
+            if key not in valid_post.keys():
 
                 raise InvalidInputDataError
-        
         ...
             
-
     @validates('name')
-    def validate_values(self, key, value: str):
-        return value.lower()
+    def validate_name(self, key, name):
+        if type(name) == str:
+            return name.lower()
+        else:
+            raise InvalidDataTypeError
+    
+    @validates('unit')
+    def validate_unit(self, key, unit):
+        if type(unit) == str:
+            return unit.lower()
+        else:
+            raise InvalidDataTypeError
+
+    @validates('min')
+    def validate_min(self, key, min):
+        if type(min) == str:
+            return min.lower()
+        else:
+            raise InvalidDataTypeError
+
+    @validates('max')
+    def validate_max(self, key, max):
+        if type(max) == str:
+            return max.lower()
+        else:
+            raise InvalidDataTypeError
+
+    @validates('result')
+    def validate_result(self, key, result):
+        if type(result) == str:
+            return result.lower()
+        else:
+            raise InvalidDataTypeError
+
+    @validates('type_id')
+    def validate_type_id(self, key, type_id):
+        if type(type_id) == int:
+            return type_id
+        else:
+            raise InvalidDataTypeError

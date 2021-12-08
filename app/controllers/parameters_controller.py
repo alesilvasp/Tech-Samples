@@ -1,10 +1,9 @@
 from flask import request, current_app, jsonify
-from app.exceptions.parameters_exceptions import InvalidUpdateDataError, ParametersNotFoundError
 from app.models.parameters_model import ParameterModel
-from app.models.types_model import TypeModel
 
 from app.exceptions import (
     InvalidInputDataError,
+    InvalidUpdateDataError,
     ParametersNotFoundError
 )
 
@@ -20,6 +19,8 @@ def create_parameter():
     except InvalidInputDataError as err:
 
         return err.msg
+
+    req_data['result'] = ""
 
     new_parameter = ParameterModel(**req_data)
 
@@ -92,7 +93,7 @@ def update_parameter(parameter_id: int):
 
         return err.message
 
-    # deleting unused 
+    # deleting unused request keys
 
     for key in req_data.copy():
 

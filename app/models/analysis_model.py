@@ -22,7 +22,7 @@ class AnalysisModel(db.Model):
     
     class_id = db.Column(db.Integer, db.ForeignKey('classes.id'))
 
-    analyst_id = db.Column(db.Integer, db.ForeignKey('users_analysts.id'))
+    analyst_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     @validates('category')
     def validate_values(self, key, value: str):

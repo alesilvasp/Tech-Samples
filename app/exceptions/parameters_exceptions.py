@@ -28,4 +28,12 @@ class InvalidUpdateDataError(Exception):
 
         super().__init__(self.message)
 
+class InvalidDataTypeError(Exception):
 
+    def __init_(self):
+
+        self.message = {
+            "error": "Invalid data type"
+        }
+
+        super().__init__(self.message)
