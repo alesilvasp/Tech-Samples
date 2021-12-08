@@ -11,7 +11,7 @@ class TypeModel(db.Model):
     __tablename__ = 'types'
     
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True, nullable=False)
+    name = db.Column(db.String, nullable=False)
     
     class_id = db.Column(db.Integer, db.ForeignKey('classes.id'))
     
