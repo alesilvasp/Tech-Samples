@@ -2,15 +2,14 @@ from app.configs.database import db
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
 from werkzeug.security import generate_password_hash, check_password_hash
-
-from app.exceptions.user_admin_exceptions import DataContentError
-
+from app.exceptions.user_exceptions import DataContentError
 
 @dataclass
 class UserModel(db.Model):
     id: int
     name: str
     email: str
+    is_admin: bool
 
     __tablename__ = 'users'
 
@@ -36,6 +35,18 @@ class UserModel(db.Model):
     @classmethod
     def check_data(cls, data):
         keys = ['name', 'email', 'is_admin', 'password']
+        
+        for key in keys:
+            if key not in data:
+                raise DataContentError(key)
+            
+        for key in data:
+            if key not in keys:
+                raise DataContentError(key)
+            
+    @classmethod
+    def check_login_data(cls, data):
+        keys = ['email', 'password']
         
         for key in keys:
             if key not in data:
