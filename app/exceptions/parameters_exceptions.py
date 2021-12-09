@@ -30,7 +30,7 @@ class InvalidUpdateDataError(Exception):
 
 class InvalidDataTypeError(Exception):
 
-    def __init_(self):
+    def __init__(self):
 
         self.message = {
             "error": "Invalid data type"

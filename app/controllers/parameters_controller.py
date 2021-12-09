@@ -3,6 +3,7 @@ from app.models.parameters_model import ParameterModel
 
 from app.exceptions import (
     InvalidInputDataError,
+    InvalidDataTypeError,
     InvalidUpdateDataError,
     ParametersNotFoundError
 )
@@ -20,14 +21,12 @@ def create_parameter():
 
         return err.msg
 
-    req_data['result'] = ""
-
     new_parameter = ParameterModel(**req_data)
 
     session.add(new_parameter)
     session.commit()
 
-    return jsonify(new_parameter)
+    return jsonify(new_parameter), 201
 
 
 def delete_parameter(parameter_id: int):
@@ -81,6 +80,7 @@ def update_parameter(parameter_id: int):
     try:
         valid_update = [
             "result",
+            "is_approved"
         ]
 
         valid_inputs = [key for key in req_data if key in valid_update]
@@ -103,9 +103,14 @@ def update_parameter(parameter_id: int):
 
     # changing values
 
-    for key, value in req_data.items():
+    try:
+        for key, value in req_data.items():
 
-        setattr(found_parameter, key, value)
+            setattr(found_parameter, key, value)
+    
+    except InvalidDataTypeError as err:
+
+        return err.message
 
     session.add(found_parameter)
     session.commit()

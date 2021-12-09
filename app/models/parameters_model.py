@@ -15,6 +15,7 @@ class ParameterModel(db.Model):
     min: str
     max: str
     result: str
+    is_approved: str
 
     __tablename__ = 'parameters'
 
@@ -23,7 +24,8 @@ class ParameterModel(db.Model):
     unit = db.Column(db.String, nullable=False) #unit
     min = db.Column(db.String, nullable=False)
     max = db.Column(db.String, nullable=False)
-    result = db.Column(db.String)
+    result = db.Column(db.String, default="")
+    is_approved = db.Column(db.Boolean, nullable=False, default=False)
 
     type_id = db.Column(db.Integer, db.ForeignKey('types.id'))
 
@@ -38,7 +40,7 @@ class ParameterModel(db.Model):
         ]
 
         for key in req_data:
-            if key not in valid_post.keys():
+            if key not in valid_post:
 
                 raise InvalidInputDataError
         ...
@@ -78,9 +80,18 @@ class ParameterModel(db.Model):
         else:
             raise InvalidDataTypeError
 
+    @validates('is_approved')
+    def validate_is_approved(self, key, is_approved):
+        if type(is_approved) == bool:
+            return is_approved
+        else:
+            raise InvalidDataTypeError
+
+
     @validates('type_id')
     def validate_type_id(self, key, type_id):
         if type(type_id) == int:
             return type_id
         else:
             raise InvalidDataTypeError
+
