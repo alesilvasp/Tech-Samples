@@ -12,6 +12,8 @@ def init_app(app: Flask):
     # BLUEPRINT ANALYSIS:
 
     # BLUEPRINT CLASSES:
+    from app.routes.classes_blueprint import bp_classes
+    app.register_blueprint(bp_classes)
 
     # BLUEPRINT PARAMETERS:
 
