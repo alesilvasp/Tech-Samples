@@ -1,5 +1,5 @@
-from app.exceptions.user_admin_exceptions import DataContentError
 # exception USERS
+from app.exceptions.user_exceptions import DataContentError
 
 
 # exception ANALYSIS
