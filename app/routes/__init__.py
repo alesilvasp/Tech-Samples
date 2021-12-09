@@ -1,5 +1,6 @@
 from flask import Flask
 
+
 def init_app(app: Flask):
     # BLUEPRINT USERS:
     
@@ -9,15 +10,15 @@ def init_app(app: Flask):
     app.register_blueprint(bp_login)
     
     # BLUEPRINT ANALYSIS:
-    
-    
+
     # BLUEPRINT CLASSES:
-    
-    
+    from app.routes.classes_blueprint import bp_classes
+    app.register_blueprint(bp_classes)
+
     # BLUEPRINT PARAMETERS:
-    
-    
+
     # BLUEPRINT TYPES:
-    
-    
+    from app.routes.types_blueprint import bp_types
+    app.register_blueprint(bp_types)
+
     ...
