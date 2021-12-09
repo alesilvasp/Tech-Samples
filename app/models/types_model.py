@@ -1,7 +1,7 @@
 from app.configs.database import db
 from dataclasses import dataclass
-from sqlalchemy.orm import validates, relationship
-from app.exceptions.types_exceptions import InvalidInputDataError, InvalidTypeInputDataError
+from sqlalchemy.orm import validates
+from app.exceptions import InvalidInputDataError, InvalidTypeInputDataError
 
 
 @dataclass
@@ -31,5 +31,5 @@ class TypeModel(db.Model):
     def validate_values(self, key, value: str):
         return value.lower()
 
-    parameters = relationship(
+    parameters = db.relationship(
         'ParameterModel', backref='types')

@@ -1,6 +1,6 @@
 from flask import request, current_app, jsonify
 from app.models.types_model import TypeModel
-from app.exceptions.types_exceptions import InvalidInputDataError, InvalidTypeInputDataError, TypeNotFoundError, InvalidUpdateDataError
+from app.exceptions import InvalidInputDataError, InvalidTypeInputDataError, TypeNotFoundError, InvalidUpdateDataError
 import sqlalchemy
 import psycopg2
 
@@ -13,11 +13,11 @@ def create_type():
         current_app.db.session.add(new_type)
         current_app.db.session.commit()
         return jsonify(new_type), 201
-    except (InvalidInputDataError, InvalidTypeInputDataError) as e:
-        return e.message
-    except sqlalchemy.exc.IntegrityError as e:
-        if type(e.orig) == psycopg2.errors.ForeignKeyViolation:
-            return {'error': str(e.orig).split('\n')[1]}, 422
+    except (InvalidInputDataError, InvalidTypeInputDataError) as err:
+        return err.message
+    except sqlalchemy.exc.IntegrityError as err:
+        if type(err.orig) == psycopg2.errors.ForeignKeyViolation:
+            return {'error': str(err.orig).split('\n')[1]}, 422
 
 
 def update_type(type_id: int):
