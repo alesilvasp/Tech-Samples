@@ -13,7 +13,7 @@ def login():
             email=data["email"]).first()
 
         if not user:
-            return {"message": "User not found"}, 404
+            return {"Not Found": "Verify email or password"}, 404
 
         if user.verify_password(data["password"]):
             access_token = create_access_token(identity=user)
