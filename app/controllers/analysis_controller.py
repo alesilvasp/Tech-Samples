@@ -2,11 +2,13 @@
 from datetime import datetime
 from flask import jsonify, request, current_app
 from sqlalchemy.exc import IntegrityError
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app.models.analysis_model import AnalysisModel
 from app.models.user_analyst_model import UserAnalystModel
 from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError
 
+@jwt_required()
 def create_analysis():
     data = request.json
     session = current_app.db.session
@@ -15,8 +17,10 @@ def create_analysis():
         AnalysisModel.check_data(**data)
     except (InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError) as err:
         return err.message
+    
+    analyst: UserAnalystModel = get_jwt_identity()
 
-    analysis = AnalysisModel(**data, is_concluded=False)
+    analysis = AnalysisModel(**data, is_concluded=False, aanalyst_id=analyst.id)
 
     try:
         session.add(analysis)
@@ -26,27 +30,11 @@ def create_analysis():
 
     return jsonify(analysis), 201    
 
+@jwt_required()
 def read_analysis():
-    data = request.json
+    analyst: UserAnalystModel = get_jwt_identity()
 
-    if not 'analyst_id' in data:
-        return MissingKeysError().message
-
-    for key in data:
-        if key != 'analyst_id':
-            return InvalidKeysError().message
-
-    analyst_id = data['analyst_id']
-    
-    if type(analyst_id) != int:
-        return TypeError().message
-    
-    analyst = UserAnalystModel.query.filter_by(id=analyst_id).first()
-
-    if not analyst:
-        return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
-
-    analysis = AnalysisModel.query.filter_by(analyst_id=analyst_id).all()
+    analysis = AnalysisModel.query.filter_by(analyst_id=analyst.id).all()
     concluded_analysis = list()
     pending_analysis = list()
 
@@ -62,37 +50,21 @@ def read_analysis():
         'pending_analysis': pending_analysis
     })
 
-def read_by_id_analysis(id: int):
-    data = request.json
-
-    if not 'analyst_id' in data:
-        return MissingKeysError().message
-
-    for key in data:
-        if key != 'analyst_id':
-            return InvalidKeysError().message
-
-    analyst_id = data['analyst_id']
-    
-    if type(analyst_id) != int:
-        return TypeError().message
-    
-    analyst = UserAnalystModel.query.filter_by(id=analyst_id).first()
-
-    if not analyst:
-        return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
-
+@jwt_required()
+def read_by_id_analysis(id: int):    
+    analyst: UserAnalystModel = get_jwt_identity()
     analysis = AnalysisModel.query.filter_by(id=id).first()
 
     if not analysis:
         return {'error': f'Analysis with id {id} was not found.'}, 404
 
-    if analysis.analyst_id == analyst_id:
+    if analysis.analyst_id == analyst.id:
         return jsonify(analysis)
     
-    return {'error': f'Analyst with id {analyst_id} has no access to analysis {id}'}, 401
+    return {'error': f'Analyst with id {analyst.id} has no access to analysis {id}'}, 401
 
-def update_analysis(id: int, analyst_id: int):
+@jwt_required()
+def update_analysis(id: int):
     data = request.json
     session = current_app.db.session
 
@@ -127,18 +99,19 @@ def update_analysis(id: int, analyst_id: int):
     except (InvalidKeysError, TypeError, ForeignKeyNotFoundError) as err:
         return err.message
 
+    analyst: UserAnalystModel = get_jwt_identity()
     analysis = AnalysisModel.query.filter_by(id=id).first()
 
     if not analysis:
         return {'error': f'Analysis with id {id} was not found.'}, 404
     
-    analyst = UserAnalystModel.query.filter_by(id=analyst_id).first()
+    analyst = UserAnalystModel.query.filter_by(id=analyst.id).first()
 
     if not analyst:
-        return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
+        return {'error': f'Analyst with id {analyst.id} was not found.'}, 404
     
     if analysis.analyst_id != analyst.id: 
-        return {'error': f'Analyst with id {analyst_id} has no access to analysis {id}'}, 401
+        return {'error': f'Analyst with id {analyst.id} has no access to analysis {id}'}, 401
     
     for key in data:
         setattr(analysis, key, data[key])

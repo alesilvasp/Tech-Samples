@@ -35,7 +35,6 @@ class AnalysisModel(db.Model):
 	        'made',
 	        'category',
 	        'class_id',
-	        'analyst_id',
         ]
 
         for key in data:
@@ -46,7 +45,7 @@ class AnalysisModel(db.Model):
                 if type(data[key]) != str:
                     raise TypeError()
             
-            if key in ['class_id', 'analyst_id']:
+            if key in ['class_id']:
                 if type(data[key]) != int:
                     raise TypeError()
             

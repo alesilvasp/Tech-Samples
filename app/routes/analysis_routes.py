@@ -11,4 +11,4 @@ analysis_blueprint.get('')(read_analysis)
 
 analysis_blueprint.get('/<int:id>')(read_by_id_analysis)
 
-analysis_blueprint.patch('/<int:id>/<int:analyst_id>')(update_analysis)
+analysis_blueprint.patch('/<int:id>')(update_analysis)
