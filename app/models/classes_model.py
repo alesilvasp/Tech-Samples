@@ -1,7 +1,7 @@
 from app.configs.database import db
 from dataclasses import dataclass
-from sqlalchemy.orm import validates, relationship
-from app.exceptions.classes_exceptions import InvalidTypeInputDataError, InvalidInputDataError
+from sqlalchemy.orm import validates
+from app.exceptions import ConflictError, InvalidTypeInputDataError, InvalidInputDataError
 
 
 @dataclass
@@ -23,11 +23,12 @@ class ClassModel(db.Model):
         validate_keys = avaliable_keys.issubset(data_keys)
         if validate_keys == False:
             raise InvalidInputDataError
+        if cls.query.filter_by(name=data['name']).one_or_none():
+            raise ConflictError
         ...
 
     @validates('name')
     def validate_name(self, key, value):
-        print(value)
         if type(value) != str:
             raise InvalidTypeInputDataError
         return value.lower()
@@ -38,4 +39,4 @@ class ClassModel(db.Model):
             raise InvalidTypeInputDataError
         return value
 
-    types = relationship('TypeModel', backref='classes')
+    types = db.relationship('TypeModel', backref='classes')

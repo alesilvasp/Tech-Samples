@@ -1,6 +1,6 @@
 from flask import request, current_app, jsonify
 from app.models.classes_model import ClassModel
-from app.exceptions.classes_exceptions import InvalidTypeInputDataError, InvalidInputDataError
+from app.exceptions import ConflictError, InvalidTypeInputDataError, InvalidInputDataError
 import sqlalchemy
 import psycopg2
 
@@ -13,13 +13,11 @@ def create_class():
         current_app.db.session.add(new_class)
         current_app.db.session.commit()
         return jsonify(new_class)
-    except (InvalidInputDataError, InvalidTypeInputDataError) as e:
-        return e.message
-    except sqlalchemy.exc.IntegrityError as e:
-        if type(e.orig) == psycopg2.errors.ForeignKeyViolation:
-            return {'error': str(e.orig).split('\n')[1]}, 422
-        if type(e.orig) == psycopg2.errors.UniqueViolation:
-            return {'error': 'class already exists'}, 409
+    except (ConflictError, InvalidInputDataError, InvalidTypeInputDataError) as err:
+        return err.message
+    except sqlalchemy.exc.IntegrityError as err:
+        if type(err.orig) == psycopg2.errors.ForeignKeyViolation:
+            return {'error': str(err.orig).split('\n')[1]}, 422
 
 
 def read_all_class():
