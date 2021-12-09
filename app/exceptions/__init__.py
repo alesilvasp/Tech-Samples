@@ -13,6 +13,12 @@ from app.exceptions.classes_exceptions import (
     InvalidTypeInputDataError
 )
 # exception PARAMETERS
+from app.exceptions.parameters_exceptions import (
+    InvalidUpdateDataError,
+    InvalidInputDataError,
+    InvalidDataTypeError,
+    ParametersNotFoundError
+)
 
 
 # exception TYPES

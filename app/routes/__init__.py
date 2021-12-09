@@ -16,7 +16,10 @@ def init_app(app: Flask):
     app.register_blueprint(bp_classes)
 
     # BLUEPRINT PARAMETERS:
-
+    from app.routes.parameters_blueprint import bp_parameters
+    app.register_blueprint(bp_parameters)
+    
+    
     # BLUEPRINT TYPES:
     from app.routes.types_blueprint import bp_types
     app.register_blueprint(bp_types)
