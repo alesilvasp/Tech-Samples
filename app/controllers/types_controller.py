@@ -31,8 +31,9 @@ def update_type(type_id: int):
             raise InvalidUpdateDataError
         TypeModel.query.filter_by(id=type_id).update(data)
         current_app.db.session.commit()
-        updated_type = TypeModel.query.get(type_id)
-        if update_type == None:
+        updated_type = TypeModel.query.filter_by(
+            id=type_id).first()
+        if updated_type == None:
             raise TypeNotFoundError
         return jsonify(updated_type), 200
     except (InvalidUpdateDataError, TypeNotFoundError) as e:

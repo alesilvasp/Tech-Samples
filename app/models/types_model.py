@@ -21,7 +21,7 @@ class TypeModel(db.Model):
         avaliable_keys = {'name', 'class_id'}
         data_keys = set(data.keys())
         validate_keys = avaliable_keys.issubset(data_keys)
-        if validate_keys == False:
+        if validate_keys == False or len(data_keys) > 2:
             raise InvalidInputDataError
         if type(data['name']) != str or type(data['class_id']) != int:
             raise InvalidTypeInputDataError
