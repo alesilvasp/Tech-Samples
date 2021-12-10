@@ -3,6 +3,10 @@ from dataclasses import dataclass
 from sqlalchemy.orm import validates
 from datetime import datetime
 
+from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError
+from app.models.classes_model import ClassModel
+from app.models.user_analyst_model import UserAnalystModel
+
 
 @dataclass
 class AnalysisModel(db.Model):
@@ -23,6 +27,72 @@ class AnalysisModel(db.Model):
     class_id = db.Column(db.Integer, db.ForeignKey('classes.id'))
 
     analyst_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    @classmethod
+    def check_data_creation(cls, **data):
+        valid_keys = [
+            'batch',
+	        'made',
+	        'category',
+	        'class_id',
+        ]
+
+        for key in data:
+            if not key in valid_keys:
+                raise InvalidKeysError()
+
+            if key in ['category', 'batch']:
+                if type(data[key]) != str:
+                    raise TypeError()
+            
+            if key in ['class_id']:
+                if type(data[key]) != int:
+                    raise TypeError()
+            
+            if key in ['made']:
+                try:
+                    data[key] = datetime.strptime(data[key], '%d-%m-%Y')
+                except:
+                    raise TypeError()
+
+        for key in valid_keys:
+            if not key in data:
+                raise MissingKeysError()
+        
+        analysis_class = ClassModel.query.filter_by(id=data['class_id']).first()
+        analysis_analyst = UserAnalystModel.query.filter_by(id=data['analyst_id']).first()
+
+        if not analysis_analyst or not analysis_class:
+            raise ForeignKeyNotFoundError()
+        
+    @classmethod
+    def check_data_update(cls, **data):
+        valid_keys = [
+	        'made',
+	        'category',
+	        'class_id',
+	        'analyst_id',
+            'is_concluded'
+        ]
+
+        for key in data:
+            if not key in valid_keys:
+                raise InvalidKeysError()
+
+            if key in ['category'] and type(data[key]) != str:
+                    raise TypeError()
+            
+            if key in ['class_id', 'analyst_id'] and type(data[key]) != int:
+                    raise TypeError()
+            
+            if key in ['made']:
+                try:
+                    data[key] = datetime.strptime(data[key], '%d-%m-%Y')
+                except:
+                    raise TypeError()       
+
+            if key in ['is_concluded'] and type(data[key]) != bool:
+                raise TypeError()
 
     @validates('category')
     def validate_values(self, key, value: str):
