@@ -1,5 +1,4 @@
 
-from datetime import datetime
 from flask import jsonify, request, current_app
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -26,7 +25,7 @@ def create_analysis():
         return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
 
     if analyst.is_admin:
-        return {'error': f'User {analyst.id} is not a analyst.'}
+        return {'error': f'User {analyst.id} is not a analyst.'}, 401
 
     analysis = AnalysisModel(**data, is_concluded=False, aanalyst_id=analyst.id)
 
@@ -48,7 +47,7 @@ def read_analysis():
         return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
 
     if analyst.is_admin:
-        return {'error': f'User {analyst.id} is not a analyst.'}
+        return {'error': f'User {analyst.id} is not a analyst.'}, 401
 
     analysis: list[AnalysisModel]= AnalysisModel.query.filter_by(analyst_id=analyst.id).all()
     concluded_analysis = list()
@@ -76,7 +75,7 @@ def read_by_id_analysis(id: int):
         return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
 
     if analyst.is_admin:
-        return {'error': f'User {analyst.id} is not a analyst.'}
+        return {'error': f'User {analyst.id} is not a analyst.'}, 401
 
     analysis = AnalysisModel.query.filter_by(id=id).first()
 
@@ -106,7 +105,7 @@ def update_analysis(id: int):
         return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
 
     if analyst.is_admin:
-        return {'error': f'User {analyst.id} is not a analyst.'}
+        return {'error': f'User {analyst.id} is not a analyst.'}, 401
 
     analysis = AnalysisModel.query.filter_by(id=id).first()
 
