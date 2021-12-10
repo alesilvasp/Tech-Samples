@@ -275,3 +275,13 @@ Caso o name não seja uma string o retorno será:
   "error": "Only the key name must be informed and it must be of type string"
 }
 ```
+
+Caso o type_id não exista o retorno será:
+
+`POST /classes/types/id - FORMATO DA RESPOSTA - STATUS 404`
+
+```json
+{
+ "error": "Type not found
+}
+```
