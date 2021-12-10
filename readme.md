@@ -167,3 +167,111 @@ Caso o admin_id nao seja um inteiro ou name não seja uma string o retorno será
   "error": "Invalid input data values, name must be of type string and class_id must be of type int"
 }
 ```
+
+### Visualização de classes
+
+`GET /classes `
+
+Caso dê tudo certo o retorno será:
+
+`GET /classes - FORMATO DA RESPOSTA - STATUS 200`
+
+```json
+[
+  {
+    "id": 1,
+    "name": "refrigerante",
+    "types": []
+  },
+  {
+    "id": 2,
+    "name": "salgadinho",
+    "types": []
+  }
+]
+```
+
+### Criação de types
+
+`POST /classes/types - FORMATO DA REQUISIÇÃO`
+
+```json
+{
+  "name": "fisico-quimico",
+  "class_id": 1
+}
+```
+
+Caso dê tudo certo o retorno será:
+
+`POST /classes/types - FORMATO DA RESPOSTA - STATUS 201`
+
+```json
+{
+  "id": 1,
+  "name": "fisico-quimico",
+  "parameters": []
+}
+```
+
+Caso o class_id não exista o retorno será:
+
+`POST /classes/types - FORMATO DA RESPOSTA - STATUS 422`
+
+```json
+{
+  "error": "DETAIL:  Key (class_id)=(1) is not present in table \"classes\"."
+}
+```
+
+Caso o class_id ou name não seja informada o retorno será:
+
+`POST /classes/types - FORMATO DA RESPOSTA - STATUS 400`
+
+```json
+{
+  "error": "Invalid input data keys, avaliable keys: name, class_id"
+}
+```
+
+Caso o class_id nao seja um inteiro ou name não seja uma string o retorno será:
+
+`POST /classes/types - FORMATO DA RESPOSTA - STATUS 400`
+
+```json
+{
+  "error": "Invalid input data values, name must be of type string and class_id must be of type int"
+}
+```
+
+### Atualizar type
+
+`POST /classes/types/id - FORMATO DA REQUISIÇÃO`
+
+```json
+{
+  "name": "microbiológicos"
+}
+```
+
+Caso dê tudo certo o retorno será:
+
+`POST /classes/types/id - FORMATO DA RESPOSTA - STATUS 201`
+
+```json
+{
+  "id": 1,
+  "name": "microbiologicos",
+  "parameters": []
+}
+```
+
+Caso o name não seja uma string o retorno será:
+
+`POST /classes/types/id - FORMATO DA RESPOSTA - STATUS 400`
+
+```json
+{
+  "error": "Only the key name must be informed and it must be of type string"
+}
+```
