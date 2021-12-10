@@ -21,7 +21,7 @@ class ClassModel(db.Model):
         avaliable_keys = {'name', 'admin_id'}
         data_keys = set(data.keys())
         validate_keys = avaliable_keys.issubset(data_keys)
-        if validate_keys == False:
+        if validate_keys == False or len(data_keys) > 2:
             raise InvalidInputDataError
         if cls.query.filter_by(name=data['name']).one_or_none():
             raise ConflictError
