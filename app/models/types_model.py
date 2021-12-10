@@ -1,7 +1,7 @@
 from app.configs.database import db
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
-from app.exceptions import InvalidInputDataError, InvalidTypeInputDataError
+from app.exceptions.types_exceptions import InvalidInputDataError, InvalidTypeInputDataError
 
 
 @dataclass

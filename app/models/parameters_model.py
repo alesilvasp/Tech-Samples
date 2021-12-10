@@ -2,10 +2,11 @@ from app.configs.database import db
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
 
-from app.exceptions import (
+from app.exceptions.parameters_exceptions import (
     InvalidInputDataError,
     InvalidDataTypeError
 )
+
 
 @dataclass
 class ParameterModel(db.Model):
@@ -21,7 +22,7 @@ class ParameterModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    unit = db.Column(db.String, nullable=False) #unit
+    unit = db.Column(db.String, nullable=False)
     min = db.Column(db.String, nullable=False)
     max = db.Column(db.String, nullable=False)
     result = db.Column(db.String, default="")
@@ -44,14 +45,14 @@ class ParameterModel(db.Model):
 
                 raise InvalidInputDataError
         ...
-            
+
     @validates('name')
     def validate_name(self, key, name):
         if type(name) == str:
             return name.lower()
         else:
             raise InvalidDataTypeError
-    
+
     @validates('unit')
     def validate_unit(self, key, unit):
         if type(unit) == str:
@@ -87,11 +88,9 @@ class ParameterModel(db.Model):
         else:
             raise InvalidDataTypeError
 
-
     @validates('type_id')
     def validate_type_id(self, key, type_id):
         if type(type_id) == int:
             return type_id
         else:
             raise InvalidDataTypeError
-

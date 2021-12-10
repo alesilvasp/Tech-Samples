@@ -1,12 +1,13 @@
 from flask import request, current_app, jsonify
 from app.models.parameters_model import ParameterModel
 
-from app.exceptions import (
+from app.exceptions.parameters_exceptions import (
     InvalidInputDataError,
     InvalidDataTypeError,
     InvalidUpdateDataError,
     ParametersNotFoundError
 )
+
 
 def create_parameter():
 
@@ -15,18 +16,19 @@ def create_parameter():
     req_data = request.get_json()
 
     try:
-        validate_keys = ParameterModel.check_data(**req_data)
-    
+
+        ParameterModel.check_data(**req_data)
+
+        new_parameter = ParameterModel(**req_data)
+
+        session.add(new_parameter)
+        session.commit()
+
+        return jsonify(new_parameter), 201
+
     except InvalidInputDataError as err:
 
         return err.msg
-
-    new_parameter = ParameterModel(**req_data)
-
-    session.add(new_parameter)
-    session.commit()
-
-    return jsonify(new_parameter), 201
 
 
 def delete_parameter(parameter_id: int):
@@ -36,9 +38,9 @@ def delete_parameter(parameter_id: int):
     try:
         found_parameter = (
             ParameterModel
-                .query
-                .filter_by(id=parameter_id)
-                .first()
+            .query
+            .filter_by(id=parameter_id)
+            .first()
         )
 
         if found_parameter == None:
@@ -64,15 +66,15 @@ def update_parameter(parameter_id: int):
     try:
         found_parameter = (
             ParameterModel
-                .query
-                .filter_by(id=parameter_id)
-                .first()
+            .query
+            .filter_by(id=parameter_id)
+            .first()
         )
 
         if found_parameter == None:
 
             raise ParametersNotFoundError
-    
+
     except ParametersNotFoundError as err:
 
         return err.message
@@ -88,7 +90,7 @@ def update_parameter(parameter_id: int):
         if len(valid_inputs) == 0:
 
             raise InvalidUpdateDataError
-    
+
     except InvalidUpdateDataError as err:
 
         return err.message
@@ -107,7 +109,7 @@ def update_parameter(parameter_id: int):
         for key, value in req_data.items():
 
             setattr(found_parameter, key, value)
-    
+
     except InvalidDataTypeError as err:
 
         return err.message
@@ -116,9 +118,3 @@ def update_parameter(parameter_id: int):
     session.commit()
 
     return jsonify(found_parameter), 200
-
-
-
-    
-    
-

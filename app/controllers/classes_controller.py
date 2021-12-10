@@ -1,6 +1,6 @@
 from flask import request, current_app, jsonify
 from app.models.classes_model import ClassModel
-from app.exceptions import ConflictError, InvalidTypeInputDataError, InvalidInputDataError
+from app.exceptions.classes_exceptions import ConflictError, InvalidTypeInputDataError, InvalidInputDataError
 import sqlalchemy
 import psycopg2
 

@@ -5,7 +5,7 @@ from datetime import datetime
 
 from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError
 from app.models.classes_model import ClassModel
-from app.models.user_analyst_model import UserAnalystModel
+from app.models.users_model import UserModel
 
 
 @dataclass
@@ -23,7 +23,7 @@ class AnalysisModel(db.Model):
     made = db.Column(db.DateTime)
     category = db.Column(db.String, nullable=False)
     is_concluded = db.Column(db.Boolean)
-    
+
     class_id = db.Column(db.Integer, db.ForeignKey('classes.id'))
 
     analyst_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -32,9 +32,9 @@ class AnalysisModel(db.Model):
     def check_data_creation(cls, **data):
         valid_keys = [
             'batch',
-	        'made',
-	        'category',
-	        'class_id',
+            'made',
+            'category',
+            'class_id',
         ]
 
         for key in data:
@@ -44,11 +44,11 @@ class AnalysisModel(db.Model):
             if key in ['category', 'batch']:
                 if type(data[key]) != str:
                     raise TypeError()
-            
+
             if key in ['class_id']:
                 if type(data[key]) != int:
                     raise TypeError()
-            
+
             if key in ['made']:
                 try:
                     data[key] = datetime.strptime(data[key], '%d-%m-%Y')
@@ -58,20 +58,22 @@ class AnalysisModel(db.Model):
         for key in valid_keys:
             if not key in data:
                 raise MissingKeysError()
-        
-        analysis_class = ClassModel.query.filter_by(id=data['class_id']).first()
-        analysis_analyst = UserAnalystModel.query.filter_by(id=data['analyst_id']).first()
+
+        analysis_class = ClassModel.query.filter_by(
+            id=data['class_id']).first()
+        analysis_analyst = UserModel.query.filter_by(
+            id=data['analyst_id']).first()
 
         if not analysis_analyst or not analysis_class:
             raise ForeignKeyNotFoundError()
-        
+
     @classmethod
     def check_data_update(cls, **data):
         valid_keys = [
-	        'made',
-	        'category',
-	        'class_id',
-	        'analyst_id',
+            'made',
+            'category',
+            'class_id',
+            'analyst_id',
             'is_concluded'
         ]
 
@@ -80,16 +82,16 @@ class AnalysisModel(db.Model):
                 raise InvalidKeysError()
 
             if key in ['category'] and type(data[key]) != str:
-                    raise TypeError()
-            
+                raise TypeError()
+
             if key in ['class_id', 'analyst_id'] and type(data[key]) != int:
-                    raise TypeError()
-            
+                raise TypeError()
+
             if key in ['made']:
                 try:
                     data[key] = datetime.strptime(data[key], '%d-%m-%Y')
                 except:
-                    raise TypeError()       
+                    raise TypeError()
 
             if key in ['is_concluded'] and type(data[key]) != bool:
                 raise TypeError()

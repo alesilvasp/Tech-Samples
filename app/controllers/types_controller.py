@@ -1,6 +1,6 @@
 from flask import request, current_app, jsonify
 from app.models.types_model import TypeModel
-from app.exceptions import InvalidInputDataError, InvalidTypeInputDataError, TypeNotFoundError, InvalidUpdateDataError
+from app.exceptions.types_exceptions import InvalidInputDataError, InvalidTypeInputDataError, TypeNotFoundError, InvalidUpdateDataError
 import sqlalchemy
 import psycopg2
 
@@ -8,7 +8,7 @@ import psycopg2
 def create_type():
     data = request.json
     try:
-        new_type = TypeModel.check_data(**data)
+        TypeModel.check_data(**data)
         new_type = TypeModel(**data)
         current_app.db.session.add(new_type)
         current_app.db.session.commit()
@@ -36,5 +36,5 @@ def update_type(type_id: int):
         if updated_type == None:
             raise TypeNotFoundError
         return jsonify(updated_type), 200
-    except (InvalidUpdateDataError, TypeNotFoundError) as e:
-        return e.message
+    except (InvalidUpdateDataError, TypeNotFoundError) as err:
+        return err.message

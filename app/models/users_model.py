@@ -2,7 +2,9 @@ from app.configs.database import db
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.exceptions.user_exceptions import DataContentError
+from app.exceptions.user_exceptions import DataContentError, EmailFormatError
+import re
+
 
 @dataclass
 class UserModel(db.Model):
@@ -43,19 +45,25 @@ class UserModel(db.Model):
         for key in data:
             if key not in keys:
                 raise DataContentError(key)
-            
+
     @classmethod
     def check_login_data(cls, data):
         keys = ['email', 'password']
-        
+
         for key in keys:
             if key not in data:
                 raise DataContentError(key)
-            
+
         for key in data:
             if key not in keys:
                 raise DataContentError(key)
 
-    @validates('name, email')
-    def validate_values(self, key, value: str):
-        return value.lower()
+    @validates('name')
+    def validate_values(self, key, name: str):
+        return name.lower()
+
+    @validates('email')
+    def validate_email(self, key, email: str):
+        if not re.match(r'^[a-zA-Z0-9]+([.-_]?[a-zA-Z0-9]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$', email):
+            raise EmailFormatError
+        return email.lower()
