@@ -285,3 +285,314 @@ Caso o type_id não exista o retorno será:
  "error": "Type not found
 }
 ```
+
+## Analysis
+
+### Criação
+
+`POST /analysis - FORMATO DA REQUISIÇÂO`
+
+```json
+{
+  "batch": "123",
+	"made": "01-01-2021",
+	"category": "Category",
+	"class_id": 1
+}
+```
+
+Caso dê tudo certo, o retorno será:
+
+`POST /analysis - FORMATO DA RESPOSTA - STATUS 201`
+
+```json
+{
+  "id": 1,
+  "batch": "123",
+	"made": "01-01-2021",
+	"category": "Category",
+  "is_concluded": false,
+	"class_id": 1,
+  "analyst_id": 1
+}
+```
+
+Caso chaves inválidas estejam no corpo da requisição, o retorno será:
+
+`POST /analysis - FORMATO DA RESPOSTA - STATUS 400`
+
+```json
+{
+  "error": "One or more invalid keys were given."
+}
+```
+
+Caso chaves estejam faltando no corpo da requisição, o retorno será:
+
+`POST /analysis - FORMATO DA RESPOSTA - STATUS 400`
+
+```json
+{
+  "error": "One or more keys are missing."
+}
+```
+
+Caso chaves tenham o tipo errado na requisição, o retorno será:
+
+`POST /analysis - FORMATO DA RESPOSTA - STATUS 400`
+
+```json
+{
+  "error": "One or more keys have the wrong type."
+}
+```
+
+Caso o id de classe dada não esteja cadastrada no banco de dados, o retorno será:
+
+`POST /analysis - FORMATO DA RESPOSTA - STATUS 404`
+
+```json
+{
+  "error": "One or more foreign keys were not found."
+}
+```
+
+Caso o usuário não esteja cadastrado, o retorno será:
+
+`POST /analysis - FORMATO DA RESPOSTA - STATUS 404`
+
+```json
+{
+  "error": "Analyst with id 1 was not found."
+}
+```
+
+Caso o usuário seja um administrador, o retorno será:
+
+`POST /analysis - FORMATO DA RESPOSTA - STATUS 401`
+
+```json
+{
+  "error": "User 1 is not a analyst."
+}
+```
+
+Caso a análise já esteja cadastrada no banco de dados, o retorno será:
+
+`POST /analysis - FORMATO DA RESPOSTA - STATUS 409`
+
+```json
+{
+  "error": "Analysis with batch id 123 already exists."
+}
+```
+
+### Ler todas as análises
+
+Caso de tudo certo, o retorno será:
+
+`GET /analysis - FORMATO DA RESPOSTA - STATUS 200`
+
+```json
+{
+  "concluded_analysis": [
+    {
+      "id": 1,
+      "batch": "123",
+	    "made": "01-01-2021",
+	    "category": "Category",
+      "is_concluded": true,
+	    "class_id": 1,
+      "analyst_id": 1
+    }
+  ],
+  "pending_analysis": [
+    {
+      "id": 2,
+      "batch": "1234",
+	    "made": "01-01-2021",
+	    "category": "Category",
+      "is_concluded": false,
+	    "class_id": 1,
+      "analyst_id": 1
+    }
+  ]
+}
+```
+
+Caso o usuário não esteja cadastrado, o retorno será:
+
+`GET /analysis - FORMATO DA RESPOSTA - STATUS 404`
+
+```json
+{
+  "error": "Analyst with id 1 was not found."
+}
+```
+
+Caso o usuário seja um administrador, o retorno será:
+
+`GET /analysis - FORMATO DA RESPOSTA - STATUS 401`
+
+```json
+{
+  "error": "User 1 is not a analyst."
+}
+```
+
+### Ler análise pelo ID
+
+Caso de tudo certo, o retorno será:
+
+`GET /analysis/id - FORMATO DA RESPOSTA - STATUS 200`
+
+```json
+{
+  "id": 1,
+  "batch": "123",
+	"made": "01-01-2021",
+	"category": "Category",
+  "is_concluded": false,
+	"class_id": 1,
+  "analyst_id": 1
+}
+```
+
+Caso o usuário não esteja cadastrado, o retorno será:
+
+`GET /analysis/id - FORMATO DA RESPOSTA - STATUS 404`
+
+```json
+{
+  "error": "Analyst with id 1 was not found."
+}
+```
+
+Caso o usuário seja um administrador, o retorno será:
+
+`GET /analysis/id - FORMATO DA RESPOSTA - STATUS 401`
+
+```json
+{
+  "error": "User 1 is not a analyst."
+}
+```
+
+Caso a análise não esteja cadastrada no banco de dados, o retorno será:
+
+`GET /analysis/id - FORMATO DA RESPOSTA - STATUS 404`
+
+```json
+{
+  "error": "Analysis with id 1 was not found."
+}
+```
+
+Caso o usuário não seja o responsável pela análise, o retono será:
+
+`GET /analysis/id - FORMATO DA RESPOSTA - STATUS 401`
+
+```json
+{
+  "error": "Analyst with id 1 has no access to analysis 123"
+}
+```
+
+### Atualizar análise
+
+`PATCH /analysis/id - FORMATO DA REQUISIÇÃO`
+
+```json
+{
+	"made": "02-02-2021",
+	"category": "Category",
+  "is_concluded": true,
+	"class_id": 2,
+  "analyst_id": 2  
+}
+```
+
+Caso de tudo certo, a resposta será:
+
+`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 200`
+
+```json
+{
+  "id": 1,
+	"made": "02-02-2021",
+	"category": "Category",
+  "is_concluded": true,
+	"class_id": 2,
+  "analyst_id": 2
+}
+```
+
+Caso chaves inválidas estejam no corpo da requisição, o retorno será:
+
+`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 400`
+
+```json
+{
+  "error": "One or more invalid keys were given."
+}
+```
+
+Caso chaves tenham o tipo errado na requisição, o retorno será:
+
+`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 400`
+
+```json
+{
+  "error": "One or more keys have the wrong type."
+}
+```
+
+Caso o id de classe dada não esteja cadastrada no banco de dados, o retorno será:
+
+`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 404`
+
+```json
+{
+  "error": "One or more foreign keys were not found."
+}
+```
+
+Caso o usuário não esteja cadastrado, o retorno será:
+
+`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 404`
+
+```json
+{
+  "error": "Analyst with id 1 was not found."
+}
+```
+
+Caso o usuário seja um administrador, o retorno será:
+
+`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 401`
+
+```json
+{
+  "error": "User 1 is not a analyst."
+}
+```
+
+Caso a análise não esteja cadastrada no banco de dados, o retorno será:
+
+`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 404`
+
+```json
+{
+  "error": "Analysis with id 1 was not found."
+}
+```
+
+Caso o usuário não seja o responsável pela análise, o retono será:
+
+`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 401`
+
+```json
+{
+  "error": "Analyst with id 1 has no access to analysis 123"
+}
+```
