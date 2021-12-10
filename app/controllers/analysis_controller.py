@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from app.models.analysis_model import AnalysisModel
-from app.models.user_analyst_model import UserAnalystModel
+from app.models.users_model import UserModel
 from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError
 
 @jwt_required()
@@ -14,11 +14,19 @@ def create_analysis():
     session = current_app.db.session
 
     try:
-        AnalysisModel.check_data(**data)
+        AnalysisModel.check_data_creation(**data)
     except (InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError) as err:
         return err.message
     
-    analyst: UserAnalystModel = get_jwt_identity()
+    analyst: UserModel = get_jwt_identity()
+    analyst_id = analyst.id
+    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first() 
+ 
+    if not analyst:
+        return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
+
+    if analyst.is_admin:
+        return {'error': f'User {analyst.id} is not a analyst.'}
 
     analysis = AnalysisModel(**data, is_concluded=False, aanalyst_id=analyst.id)
 
@@ -32,9 +40,17 @@ def create_analysis():
 
 @jwt_required()
 def read_analysis():
-    analyst: UserAnalystModel = get_jwt_identity()
+    analyst: UserModel = get_jwt_identity()
+    analyst_id = analyst.id
+    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first() 
+ 
+    if not analyst:
+        return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
 
-    analysis = AnalysisModel.query.filter_by(analyst_id=analyst.id).all()
+    if analyst.is_admin:
+        return {'error': f'User {analyst.id} is not a analyst.'}
+
+    analysis: list[AnalysisModel]= AnalysisModel.query.filter_by(analyst_id=analyst.id).all()
     concluded_analysis = list()
     pending_analysis = list()
 
@@ -52,7 +68,16 @@ def read_analysis():
 
 @jwt_required()
 def read_by_id_analysis(id: int):    
-    analyst: UserAnalystModel = get_jwt_identity()
+    analyst: UserModel = get_jwt_identity()
+    analyst_id = analyst.id
+    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first() 
+ 
+    if not analyst:
+        return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
+
+    if analyst.is_admin:
+        return {'error': f'User {analyst.id} is not a analyst.'}
+
     analysis = AnalysisModel.query.filter_by(id=id).first()
 
     if not analysis:
@@ -69,46 +94,27 @@ def update_analysis(id: int):
     session = current_app.db.session
 
     try:
-        valid_keys = [
-	        'made',
-	        'category',
-	        'class_id',
-	        'analyst_id',
-            'is_concluded'
-        ]
-
-        for key in data:
-            if not key in valid_keys:
-                raise InvalidKeysError()
-
-            if key in ['category'] and type(data[key]) != str:
-                    raise TypeError()
-            
-            if key in ['class_id', 'analyst_id'] and type(data[key]) != int:
-                    raise TypeError()
-            
-            if key in ['made']:
-                try:
-                    data[key] = datetime.strptime(data[key], '%d-%m-%Y')
-                except:
-                    raise TypeError()       
-
-            if key in ['is_concluded'] and type(data[key]) != bool:
-                raise TypeError()
-
+        AnalysisModel.check_data_update(**data)
     except (InvalidKeysError, TypeError, ForeignKeyNotFoundError) as err:
         return err.message
 
-    analyst: UserAnalystModel = get_jwt_identity()
+    analyst: UserModel = get_jwt_identity()
+    analyst_id = analyst.id
+    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first() 
+ 
+    if not analyst:
+        return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
+
+    if analyst.is_admin:
+        return {'error': f'User {analyst.id} is not a analyst.'}
+
     analysis = AnalysisModel.query.filter_by(id=id).first()
 
     if not analysis:
         return {'error': f'Analysis with id {id} was not found.'}, 404
     
-    analyst = UserAnalystModel.query.filter_by(id=analyst.id).first()
+    analyst = UserModel.query.filter_by(id=analyst.id).first()
 
-    if not analyst:
-        return {'error': f'Analyst with id {analyst.id} was not found.'}, 404
     
     if analysis.analyst_id != analyst.id: 
         return {'error': f'Analyst with id {analyst.id} has no access to analysis {id}'}, 401

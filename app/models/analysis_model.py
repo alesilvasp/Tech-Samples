@@ -29,7 +29,7 @@ class AnalysisModel(db.Model):
     analyst_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     @classmethod
-    def check_data(cls, **data):
+    def check_data_creation(cls, **data):
         valid_keys = [
             'batch',
 	        'made',
@@ -65,7 +65,34 @@ class AnalysisModel(db.Model):
         if not analysis_analyst or not analysis_class:
             raise ForeignKeyNotFoundError()
         
+    @classmethod
+    def check_data_update(cls, **data):
+        valid_keys = [
+	        'made',
+	        'category',
+	        'class_id',
+	        'analyst_id',
+            'is_concluded'
+        ]
 
+        for key in data:
+            if not key in valid_keys:
+                raise InvalidKeysError()
+
+            if key in ['category'] and type(data[key]) != str:
+                    raise TypeError()
+            
+            if key in ['class_id', 'analyst_id'] and type(data[key]) != int:
+                    raise TypeError()
+            
+            if key in ['made']:
+                try:
+                    data[key] = datetime.strptime(data[key], '%d-%m-%Y')
+                except:
+                    raise TypeError()       
+
+            if key in ['is_concluded'] and type(data[key]) != bool:
+                raise TypeError()
 
     @validates('category')
     def validate_values(self, key, value: str):
