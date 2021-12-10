@@ -1,4 +1,3 @@
-
 from flask import jsonify, request, current_app
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -6,6 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models.analysis_model import AnalysisModel
 from app.models.users_model import UserModel
 from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError
+
 
 @jwt_required()
 def create_analysis():
@@ -16,18 +16,19 @@ def create_analysis():
         AnalysisModel.check_data_creation(**data)
     except (InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError) as err:
         return err.message
-    
+
     analyst: UserModel = get_jwt_identity()
     analyst_id = analyst.id
-    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first() 
- 
+    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
+
     if not analyst:
         return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
 
     if analyst.is_admin:
         return {'error': f'User {analyst.id} is not a analyst.'}, 401
 
-    analysis = AnalysisModel(**data, is_concluded=False, aanalyst_id=analyst.id)
+    analysis = AnalysisModel(
+        **data, is_concluded=False, aanalyst_id=analyst.id)
 
     try:
         session.add(analysis)
@@ -35,21 +36,23 @@ def create_analysis():
     except IntegrityError as err:
         return {'error': f'Analysis with batch id {analysis.batch} already exists.'}, 409
 
-    return jsonify(analysis), 201    
+    return jsonify(analysis), 201
+
 
 @jwt_required()
 def read_analysis():
     analyst: UserModel = get_jwt_identity()
     analyst_id = analyst.id
-    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first() 
- 
+    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
+
     if not analyst:
         return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
 
     if analyst.is_admin:
         return {'error': f'User {analyst.id} is not a analyst.'}, 401
 
-    analysis: list[AnalysisModel]= AnalysisModel.query.filter_by(analyst_id=analyst.id).all()
+    analysis: list[AnalysisModel] = AnalysisModel.query.filter_by(
+        analyst_id=analyst.id).all()
     concluded_analysis = list()
     pending_analysis = list()
 
@@ -65,12 +68,13 @@ def read_analysis():
         'pending_analysis': pending_analysis
     })
 
+
 @jwt_required()
-def read_by_id_analysis(id: int):    
+def read_by_id_analysis(id: int):
     analyst: UserModel = get_jwt_identity()
     analyst_id = analyst.id
-    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first() 
- 
+    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
+
     if not analyst:
         return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
 
@@ -84,8 +88,9 @@ def read_by_id_analysis(id: int):
 
     if analysis.analyst_id == analyst.id:
         return jsonify(analysis)
-    
+
     return {'error': f'Analyst with id {analyst.id} has no access to analysis {id}'}, 401
+
 
 @jwt_required()
 def update_analysis(id: int):
@@ -99,8 +104,8 @@ def update_analysis(id: int):
 
     analyst: UserModel = get_jwt_identity()
     analyst_id = analyst.id
-    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first() 
- 
+    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
+
     if not analyst:
         return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
 
@@ -111,16 +116,15 @@ def update_analysis(id: int):
 
     if not analysis:
         return {'error': f'Analysis with id {id} was not found.'}, 404
-    
+
     analyst = UserModel.query.filter_by(id=analyst.id).first()
 
-    
-    if analysis.analyst_id != analyst.id: 
+    if analysis.analyst_id != analyst.id:
         return {'error': f'Analyst with id {analyst.id} has no access to analysis {id}'}, 401
-    
+
     for key in data:
         setattr(analysis, key, data[key])
-    
+
     session.commit()
-    
+
     return jsonify(analysis)

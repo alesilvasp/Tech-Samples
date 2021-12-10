@@ -20,5 +20,5 @@ def login():
             return {"token": access_token}, 200
         else:
             return {"message": "Unauthorized"}, 401
-    except DataContentError as error:
-        return error.message
+    except DataContentError as err:
+        return err.message
