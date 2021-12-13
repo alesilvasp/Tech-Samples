@@ -13,12 +13,12 @@ def login():
             email=data["email"]).first()
 
         if not user:
-            return {"Not Found": "Verify email or password"}, 404
+            return {"Not Found": "Verify email"}, 404
 
         if user.verify_password(data["password"]):
             access_token = create_access_token(identity=user)
-            return {"token": access_token}, 200
+            return {"access_token": access_token}, 200
         else:
-            return {"message": "Unauthorized"}, 401
+            return {"message": "Verify password"}, 401
     except DataContentError as err:
         return err.message
