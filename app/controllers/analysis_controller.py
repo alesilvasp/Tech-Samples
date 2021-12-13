@@ -12,23 +12,24 @@ def create_analysis():
     data = request.json
     session = current_app.db.session
 
+    analyst = get_jwt_identity()
+    analyst_id = analyst['id']
+    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
+    
     try:
-        AnalysisModel.check_data_creation(**data)
+        AnalysisModel.check_data_creation(analyst_id, **data)
     except (InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError) as err:
         return err.message
 
-    analyst: UserModel = get_jwt_identity()
-    analyst_id = analyst.id
-    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
 
     if not analyst:
         return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
 
     if analyst.is_admin:
-        return {'error': f'User {analyst.id} is not a analyst.'}, 401
+        return {'error': f'User {analyst_id} is not a analyst.'}, 401
 
     analysis = AnalysisModel(
-        **data, is_concluded=False, aanalyst_id=analyst.id)
+        **data, is_concluded=False, analyst_id=analyst.id)
 
     try:
         session.add(analysis)
@@ -41,8 +42,8 @@ def create_analysis():
 
 @jwt_required()
 def read_analysis():
-    analyst: UserModel = get_jwt_identity()
-    analyst_id = analyst.id
+    analyst = get_jwt_identity()
+    analyst_id = analyst['id']
     analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
 
     if not analyst:
@@ -71,8 +72,8 @@ def read_analysis():
 
 @jwt_required()
 def read_by_id_analysis(id: int):
-    analyst: UserModel = get_jwt_identity()
-    analyst_id = analyst.id
+    analyst = get_jwt_identity()
+    analyst_id = analyst['id']
     analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
 
     if not analyst:
@@ -96,15 +97,15 @@ def read_by_id_analysis(id: int):
 def update_analysis(id: int):
     data = request.json
     session = current_app.db.session
+    
+    analyst = get_jwt_identity()
+    analyst_id = analyst['id']
+    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
 
     try:
         AnalysisModel.check_data_update(**data)
     except (InvalidKeysError, TypeError, ForeignKeyNotFoundError) as err:
         return err.message
-
-    analyst: UserModel = get_jwt_identity()
-    analyst_id = analyst.id
-    analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
 
     if not analyst:
         return {'error': f'Analyst with id {analyst_id} was not found.'}, 404

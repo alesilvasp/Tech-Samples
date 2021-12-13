@@ -15,6 +15,8 @@ class AnalysisModel(db.Model):
     made: datetime
     category: str
     is_concluded: bool
+    class_id: int
+    analyst_id: int
 
     __tablename__ = 'analysis'
 
@@ -29,7 +31,7 @@ class AnalysisModel(db.Model):
     analyst_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     @classmethod
-    def check_data_creation(cls, **data):
+    def check_data_creation(cls, token_id, **data):
         valid_keys = [
             'batch',
             'made',
@@ -38,7 +40,8 @@ class AnalysisModel(db.Model):
         ]
 
         for key in data:
-            if not key in valid_keys:
+            print(key)
+            if key not in valid_keys:
                 raise InvalidKeysError()
 
             if key in ['category', 'batch']:
@@ -51,7 +54,7 @@ class AnalysisModel(db.Model):
 
             if key in ['made']:
                 try:
-                    data[key] = datetime.strptime(data[key], '%d-%m-%Y')
+                    data[key] = datetime.strptime(data[key], '%d/%m/%Y')
                 except:
                     raise TypeError()
 
@@ -62,7 +65,7 @@ class AnalysisModel(db.Model):
         analysis_class = ClassModel.query.filter_by(
             id=data['class_id']).first()
         analysis_analyst = UserModel.query.filter_by(
-            id=data['analyst_id']).first()
+            id=token_id).first()
 
         if not analysis_analyst or not analysis_class:
             raise ForeignKeyNotFoundError()
