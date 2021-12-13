@@ -1,6 +1,8 @@
 from flask import request, current_app, jsonify
 import sqlalchemy
+from sqlalchemy import exc
 from app.exceptions.user_exceptions import DataContentError, EmailFormatError
+from app.exceptions.types_exceptions import InvalidUpdateDataError
 from app.models.users_model import UserModel
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -51,5 +53,36 @@ def create_user_analyst():
         return err.message
     except sqlalchemy.exc.IntegrityError as err:
         return {"error": "Email already registred"}, 409
+    except PermissionError as err:
+        return {"error": "User not allowed"}, 403
+    
+    
+@jwt_required()
+def change_password():
+    user = get_jwt_identity()
+
+    data = request.get_json()
+    
+    try:
+        # if not user['is_admin']:
+        #     raise PermissionError
+        
+        avaliable_keys = {'password'}
+        data_keys = set(data.keys())
+        validate_keys = data_keys.issubset(avaliable_keys)
+        if validate_keys == False or type(data['password']) != str:
+            raise InvalidUpdateDataError
+        
+        user_to_update = UserModel.query.filter_by(id=user['id']).first()
+        
+        for key, value in data.items():
+            setattr(user_to_update, key, value)
+            
+        current_app.db.session.add(user_to_update)
+        current_app.db.session.commit()
+        return {'Msg': 'Password changed'}, 200
+        
+    except InvalidUpdateDataError as err:
+        return err.message
     except PermissionError as err:
         return {"error": "User not allowed"}, 403
