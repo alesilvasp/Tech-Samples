@@ -7,15 +7,21 @@ from app.exceptions.parameters_exceptions import (
     InvalidUpdateDataError,
     ParametersNotFoundError
 )
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
-
+@jwt_required()
 def create_parameter():
 
+    logged_user = get_jwt_identity()
+    
     session = current_app.db.session
 
     req_data = request.get_json()
 
     try:
+        
+        if logged_user['is_admin']:
+            raise PermissionError
 
         ParameterModel.check_data(**req_data)
 
@@ -29,13 +35,21 @@ def create_parameter():
     except InvalidInputDataError as err:
 
         return err.msg
+    
+    except PermissionError as err:
+        return {"error": "User not allowed"}, 403
 
-
+@jwt_required()
 def delete_parameter(parameter_id: int):
 
+    logged_user = get_jwt_identity()
     session = current_app.db.session
 
     try:
+        
+        if logged_user['is_admin']:
+            raise PermissionError
+        
         found_parameter = (
             ParameterModel
             .query
@@ -50,20 +64,26 @@ def delete_parameter(parameter_id: int):
     except ParametersNotFoundError as err:
 
         return err.message
+    
+    except PermissionError as err:
+        return {"error": "User not allowed"}, 403
 
     session.delete(found_parameter)
     session.commit()
 
     return "", 204
 
-
+@jwt_required()    
 def update_parameter(parameter_id: int):
-
+    logged_user = get_jwt_identity()
     session = current_app.db.session
 
     req_data = request.get_json()
 
     try:
+        if logged_user['is_admin']:
+            raise PermissionError
+        
         found_parameter = (
             ParameterModel
             .query
@@ -78,6 +98,9 @@ def update_parameter(parameter_id: int):
     except ParametersNotFoundError as err:
 
         return err.message
+    
+    except PermissionError as err:
+        return {"error": "User not allowed"}, 403
 
     try:
         valid_update = [
