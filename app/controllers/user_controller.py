@@ -64,8 +64,6 @@ def change_password():
     data = request.get_json()
     
     try:
-        # if not user['is_admin']:
-        #     raise PermissionError
         
         avaliable_keys = {'password'}
         data_keys = set(data.keys())
