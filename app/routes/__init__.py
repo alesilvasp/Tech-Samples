@@ -10,8 +10,8 @@ def init_app(app: Flask):
     app.register_blueprint(bp_login)
 
     # BLUEPRINT ANALYSIS:
-    # from app.routes.analysis_routes import bp_analysis
-    # app.register_blueprint(bp_analysis)
+    from app.routes.analysis_routes import bp_analysis
+    app.register_blueprint(bp_analysis)
 
     # BLUEPRINT CLASSES:
     from app.routes.classes_blueprint import bp_classes
