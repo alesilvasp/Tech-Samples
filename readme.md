@@ -112,4 +112,4 @@ SECRET_KEY=secret_key
 
 ## 8. Termos de uso
 
-#### Tipo de licença - <a name="mit" href="https://opensource.org/licenses/MIT" target="_blank">MIT</a>
+Este é um projeto Open Source para fins educacionais e não comerciais, **Tipo de licença** - <a name="mit" href="https://opensource.org/licenses/MIT" target="_blank">MIT</a>
