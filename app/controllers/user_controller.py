@@ -1,10 +1,11 @@
-from flask import request, current_app, jsonify
 import sqlalchemy
-from sqlalchemy import exc
+from flask import request, current_app, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 from app.exceptions.user_exceptions import DataContentError, EmailFormatError
 from app.exceptions.types_exceptions import InvalidUpdateDataError
 from app.models.users_model import UserModel
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.utils.email import send_login_information
 
 
 def create_user_admin():
@@ -46,6 +47,8 @@ def create_user_analyst():
 
         current_app.db.session.add(new_analyst)
         current_app.db.session.commit()
+        
+        send_login_information(data['email'], password_to_hash, data['name'])
 
         return jsonify(new_analyst), 201
 
