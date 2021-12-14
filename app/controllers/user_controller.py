@@ -55,32 +55,41 @@ def create_user_analyst():
         return {"error": "Email already registred"}, 409
     except PermissionError as err:
         return {"error": "User not allowed"}, 403
-    
-    
+
+
 @jwt_required()
 def change_password():
     user = get_jwt_identity()
 
     data = request.get_json()
-    
+
     try:
-        
+
         avaliable_keys = {'password'}
         data_keys = set(data.keys())
         validate_keys = data_keys.issubset(avaliable_keys)
         if validate_keys == False or type(data['password']) != str:
             raise InvalidUpdateDataError
-        
+
         user_to_update = UserModel.query.filter_by(id=user['id']).first()
-        
+
         for key, value in data.items():
             setattr(user_to_update, key, value)
-            
+
         current_app.db.session.add(user_to_update)
         current_app.db.session.commit()
         return {'Msg': 'Password changed'}, 200
-        
+
     except InvalidUpdateDataError as err:
         return err.message
     except PermissionError as err:
         return {"error": "User not allowed"}, 403
+
+
+def read_users():
+    data = UserModel.query.all()
+
+    if data:
+        return jsonify(data), 200
+    else:
+        return {'msg': 'Empty database'}, 200

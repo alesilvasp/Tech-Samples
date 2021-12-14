@@ -40,7 +40,6 @@ class AnalysisModel(db.Model):
         ]
 
         for key in data:
-            print(key)
             if key not in valid_keys:
                 raise InvalidKeysError()
 
@@ -59,7 +58,7 @@ class AnalysisModel(db.Model):
                     raise TypeError()
 
         for key in valid_keys:
-            if not key in data:
+            if key not in data:
                 raise MissingKeysError()
 
         analysis_class = ClassModel.query.filter_by(
