@@ -1,598 +1,115 @@
-## CADASTRO DE USUÁRIOS
+# Tech Samples
 
-### Criação de usuário (_administrador_)
+<h2>Tabela de Conteúdos</h2>
 
-`POST /signup - FORMATO DA REQUISIÇÃO`
+1. [ Sobre ](#sobre)
+2. [ Links Relevantes ](#links)
+3. [ O Problema a ser solucionado ](#problema)
+4. [ A Solução ](#solucao)
+5. [ Tecnologias](#techs)
+6. [ Instalação ](#install)
+7. [ Desenvolvedores ](#devs)
+8. [ termos de uso ](#termos)
 
-```json
-{
-  "name": "admin",
-  "email": "admin@mail.com",
-  "is_admin": true,
-  "password": "1234"
-}
+<a name="sobre"></a>
+
+## 1. Sobre
+
+O projeto foi desenvolvido no terceiro módulo curso de Desenvolvimento Full Stack da Kenzie Academy Brasil, e colocou em prática tanto nossos conhecimentos técnicos quanto a capacidade de trabalho em equipe dos alunos desenvolvedores. A aplicação é uma API que permite funções como Cadastro e Login com diferentes perfis de usuário, criação de classes de amostra, cadrastro de análises com base nas classes existentes , emissão de laudos e mais.
+
+<a name="links"></a>
+
+## 2. Links Relevantes
+
+- <a name="documentação-api" href="https://documenter.getpostman.com/view/18741402/UVR4PANK" target="_blank">Documentação API</a>
+
+<a name="problema"></a>
+
+## 3. O Problema A Ser Solucionado
+
+Identificamos uma escassez de propostas que visam soluções na automatização dos processos de análise e emissão de laudos com foco em laboratórios industriais e particulares.
+Atualmente a emissão de laudos é feita em sua maioria de forma manual através de uma planilha padrão de excel e exportado para PDF gerando os seguintes problemas:
+
+- Grande probabilidade de falha operacional ( falhas de digitação, despadronização da planilha, validação manual dos resultados das análises )
+- Probabilidade de indisponibilidade do arquivo padrão parando todo o fluxo de análise ( exclusão acidental da planilha, perda do histórico de análises caso o arquivo seja corrompido )
+- Dificuldade em levantamentos a assertividade de indicadores ( quantidade de análises mensais, análises mais solicitadas)
+- Planilha centralizada, duas análises não conseguem ser feitas ao mesmo tempo por pessoas diferentes podendo travar o fluxo de análise de um colaborador
+
+<a name="solucao"></a>
+
+## 4. A Solução
+
+Uma API que permite o gerenciamento de todo o fluxo de análise e visa resolver ou mitigar os problemas citados acima focando em disponibilidade de dados, agilidade, confidencialidade e garantia dos resultados.
+
+<a name="techs"></a>
+
+## 5. Tecnologias
+
+- <a name="python" href="https://docs.python.org/3/" target="_blank">Python</a>
+- <a name="flask" href="https://flask.palletsprojects.com/en/2.0.x/" target="_blank">Flask</a>
+- <a name="flask-m" href="https://flask-migrate.readthedocs.io/en/latest/" target="_blank">Flask Migrate</a>
+- <a name="flask=sql" href="https://flask-sqlalchemy.palletsprojects.com/en/2.x/" target="_blank">Flask SQLAlchemy</a>
+- <a name="flask-jwt" href="https://flask-jwt-extended.readthedocs.io/en/stable/" target="_blank">Flask-jwt-extended</a>
+- <a name="python.env" href="https://pypi.org/project/python-dotenv/" target="_blank">python-dotenv</a>
+- <a name="postgreSQL" href="https://www.postgresql.org/docs/" target="_blank">PostgreSQL</a>
+
+<a name="install"></a>
+
+## 6. Instalação e uso
+
+### 6.1 Requisitos:
+
+- Python a partir da versão 3.9.6
+- Gerenciador de pacotes <a name="pip" href="https://pip.pypa.io/en/stable/" target="_blank">PIP</a>
+- Banco de dados PostgreSQL
+
+### 6.2 Instalação:
+
+6.2.1 - Crie um novo banco chamado klab_database no PostgreSQL
+
+6.2.2 - Após o clone no repositório crie um ambiente virtual na pasta do projeto
+
+`python -m venv venv`
+
+6.2.3 - Para ativar o ambiente virtual utilize:
+
+`source venv/bin/activate`
+
+6.2.4 - Instale as dependências necessárias para o projeto utilizando o PIP:
+
+`pip install -r requirements.txt`
+
+6.2.5 - crie um arquivo na raiz no projeto chamado .env e faça as configurações das variáveis de ambiente abaixo com base no .env.example do projeto
+
+```
+FLASK_ENV=development
+DATABASE=postgresql://seu_usuario:sua_senha@localhost:5432/klab_database
+SECRET_KEY=secret_key
 ```
 
-Caso dê tudo certo o retorno será:
+6.2.5 - Para rodar o projeto utilize o comando `flask run` no terminal, caso de tudo certo recebera uma mensagem parecida com essa:
 
-`POST /signup - FORMATO DA RESPOSTA - STATUS 201`
-
-```json
-{
-  "id": 1,
-  "name": "admin",
-  "email": "admin@mail.com",
-  "is_admin": true
-}
+```
+ * Environment: development
+ * Debug mode: on
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 427-052-945
 ```
 
-Obs: o usuário _admin_ será o **super user** criado para o cliente final
+<a name="devs"></a>
 
-### Criação de usuário (_analista_)
+## 7. Deselvolvedores
 
-`POST /admin/new_analyst - FORMATO DA REQUISIÇÃO`
+- <a name="alex" href="https://www.linkedin.com/in/alesilva-dev/" target="_blank">Alexander Silva</a>
+- <a name="eduardo" href="https://www.linkedin.com/in/eduardoparraga/" target="_blank">Eduardo Parraga</a>
+- <a name="felipe" href="https://www.linkedin.com/in/felipe-silva-98ads/" target="_blank">Felipe Silva</a>
+- <a name="fernando" href="https://www.linkedin.com/in/nandorodrigo/" target="_blank">Fernando Rodrigo</a>
+- <a name="lucas" href="https://www.linkedin.com/in/lucas-bravo-rozado-a80b36213/" target="_blank">Lucas Bravo</a>
 
-```json
-{
-  "name": "analyst",
-  "email": "analyst@mail.com",
-  "is_admin": false,
-  "password": "1234"
-}
-```
+<a name="termos"></a>
 
-Caso dê tudo certo o retorno será:
+## 8. Termos de uso
 
-`POST /admin/new_analyst - FORMATO DA RESPOSTA - STATUS 201`
-
-```json
-{
-  "id": 1,
-  "name": "analyst",
-  "email": "analyst@mail.com",
-  "is_admin": false
-}
-```
-
-Caso já exista o email cadastrado, o retorno será:
-
-`POST /admin/new_analyst - FORMATO DA RESPOSTA - STATUS 409`
-
-```json
-{
-  "Error": "email already registred"
-}
-```
-
-Obs: Somente o usuário _admin_ poderá criar novos usuários _analistas_, caso o analista tente criar novo usuário, o retorno será:
-
-`POST /admin/new_analyst - FORMATO DA RESPOSTA - STATUS 403`
-
-```json
-{
-  "Error": "User not allowed"
-}
-```
-
-## LOGIN
-
-`POST /login - FORMATO DA REQUISIÇÃO`
-
-```json
-{
-  "email": "alesilvasp@gmail.com",
-  "password": "1234"
-}
-```
-
-Caso dê tudo certo, o retorno será:
-
-`POST /login - FORMATO DA RESPOSTA - STATUS 200`
-
-```json
-{
-  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYzOTA1NzQ0NiwianRpIjoiMTYyYzFlOTctN2E1Zi00YWYxLWE2MjUtYzQ2MjAxY2E1YTY5IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJpZCI6MSwibmFtZSI6IkFsZXgiLCJlbWFpbCI6ImFsZXNpbHZhc3BAZ21haWwuY29tIiwiaXNfYWRtaW4iOnRydWV9LCJuYmYiOjE2MzkwNTc0NDYsImV4cCI6MTYzOTA1ODM0Nn0.tnZZDuejjh18PNSTSPsZQfbMmykirmByRlTQc3Mrxy4"
-}
-```
-
-Caso algum valor esteja errado, o retorno será:
-
-`POST /login - FORMATO DA RESPOSTA - STATUS 404`
-
-```json
-{
-  "Not Found": "Verify email or password"
-}
-```
-
-### Criação de classes
-
-`POST /classes - FORMATO DA REQUISIÇÃO`
-
-```json
-{
-  "name": "refrigerante",
-  "admin_id": 1
-}
-```
-
-Caso dê tudo certo o retorno será:
-
-`POST /classes - FORMATO DA RESPOSTA - STATUS 201`
-
-```json
-{
-  "id": 1,
-  "name": "refrigerante",
-  "types": []
-}
-```
-
-Caso já exista o classe cadastrada, o retorno será:
-
-`POST /classes - FORMATO DA RESPOSTA - STATUS 409`
-
-```json
-{
-  "error": "Class already exists"
-}
-```
-
-Caso o admin_id não exista o retorno será:
-
-`POST /classes - FORMATO DA RESPOSTA - STATUS 422`
-
-```json
-{
-  "error": "DETAIL:  Key (admin_id)=(2) is not present in table \"users\"."
-}
-```
-
-Caso o admin_id ou name não seja informada o retorno será:
-
-`POST /classes - FORMATO DA RESPOSTA - STATUS 400`
-
-```json
-{
-  "error": "Invalid input data keys, avaliable keys: name, admin_id"
-}
-```
-
-Caso o admin_id nao seja um inteiro ou name não seja uma string o retorno será:
-
-`POST /classes - FORMATO DA RESPOSTA - STATUS 400`
-
-```json
-{
-  "error": "Invalid input data values, name must be of type string and class_id must be of type int"
-}
-```
-
-### Visualização de classes
-
-`GET /classes `
-
-Caso dê tudo certo o retorno será:
-
-`GET /classes - FORMATO DA RESPOSTA - STATUS 200`
-
-```json
-[
-  {
-    "id": 1,
-    "name": "refrigerante",
-    "types": []
-  },
-  {
-    "id": 2,
-    "name": "salgadinho",
-    "types": []
-  }
-]
-```
-
-### Criação de types
-
-`POST /classes/types - FORMATO DA REQUISIÇÃO`
-
-```json
-{
-  "name": "fisico-quimico",
-  "class_id": 1
-}
-```
-
-Caso dê tudo certo o retorno será:
-
-`POST /classes/types - FORMATO DA RESPOSTA - STATUS 201`
-
-```json
-{
-  "id": 1,
-  "name": "fisico-quimico",
-  "parameters": []
-}
-```
-
-Caso o class_id não exista o retorno será:
-
-`POST /classes/types - FORMATO DA RESPOSTA - STATUS 422`
-
-```json
-{
-  "error": "DETAIL:  Key (class_id)=(1) is not present in table \"classes\"."
-}
-```
-
-Caso o class_id ou name não seja informada o retorno será:
-
-`POST /classes/types - FORMATO DA RESPOSTA - STATUS 400`
-
-```json
-{
-  "error": "Invalid input data keys, avaliable keys: name, class_id"
-}
-```
-
-Caso o class_id nao seja um inteiro ou name não seja uma string o retorno será:
-
-`POST /classes/types - FORMATO DA RESPOSTA - STATUS 400`
-
-```json
-{
-  "error": "Invalid input data values, name must be of type string and class_id must be of type int"
-}
-```
-
-### Atualizar type
-
-`POST /classes/types/id - FORMATO DA REQUISIÇÃO`
-
-```json
-{
-  "name": "microbiológicos"
-}
-```
-
-Caso dê tudo certo o retorno será:
-
-`POST /classes/types/id - FORMATO DA RESPOSTA - STATUS 201`
-
-```json
-{
-  "id": 1,
-  "name": "microbiologicos",
-  "parameters": []
-}
-```
-
-Caso o name não seja uma string o retorno será:
-
-`POST /classes/types/id - FORMATO DA RESPOSTA - STATUS 400`
-
-```json
-{
-  "error": "Only the key name must be informed and it must be of type string"
-}
-```
-
-Caso o type_id não exista o retorno será:
-
-`POST /classes/types/id - FORMATO DA RESPOSTA - STATUS 404`
-
-```json
-{
- "error": "Type not found
-}
-```
-
-## Analysis
-
-### Criação
-
-`POST /analysis - FORMATO DA REQUISIÇÂO`
-
-```json
-{
-  "batch": "123",
-	"made": "01-01-2021",
-	"category": "Category",
-	"class_id": 1
-}
-```
-
-Caso dê tudo certo, o retorno será:
-
-`POST /analysis - FORMATO DA RESPOSTA - STATUS 201`
-
-```json
-{
-  "id": 1,
-  "batch": "123",
-	"made": "01-01-2021",
-	"category": "Category",
-  "is_concluded": false,
-	"class_id": 1,
-  "analyst_id": 1
-}
-```
-
-Caso chaves inválidas estejam no corpo da requisição, o retorno será:
-
-`POST /analysis - FORMATO DA RESPOSTA - STATUS 400`
-
-```json
-{
-  "error": "One or more invalid keys were given."
-}
-```
-
-Caso chaves estejam faltando no corpo da requisição, o retorno será:
-
-`POST /analysis - FORMATO DA RESPOSTA - STATUS 400`
-
-```json
-{
-  "error": "One or more keys are missing."
-}
-```
-
-Caso chaves tenham o tipo errado na requisição, o retorno será:
-
-`POST /analysis - FORMATO DA RESPOSTA - STATUS 400`
-
-```json
-{
-  "error": "One or more keys have the wrong type."
-}
-```
-
-Caso o id de classe dada não esteja cadastrada no banco de dados, o retorno será:
-
-`POST /analysis - FORMATO DA RESPOSTA - STATUS 404`
-
-```json
-{
-  "error": "One or more foreign keys were not found."
-}
-```
-
-Caso o usuário não esteja cadastrado, o retorno será:
-
-`POST /analysis - FORMATO DA RESPOSTA - STATUS 404`
-
-```json
-{
-  "error": "Analyst with id 1 was not found."
-}
-```
-
-Caso o usuário seja um administrador, o retorno será:
-
-`POST /analysis - FORMATO DA RESPOSTA - STATUS 401`
-
-```json
-{
-  "error": "User 1 is not a analyst."
-}
-```
-
-Caso a análise já esteja cadastrada no banco de dados, o retorno será:
-
-`POST /analysis - FORMATO DA RESPOSTA - STATUS 409`
-
-```json
-{
-  "error": "Analysis with batch id 123 already exists."
-}
-```
-
-### Ler todas as análises
-
-Caso de tudo certo, o retorno será:
-
-`GET /analysis - FORMATO DA RESPOSTA - STATUS 200`
-
-```json
-{
-  "concluded_analysis": [
-    {
-      "id": 1,
-      "batch": "123",
-	    "made": "01-01-2021",
-	    "category": "Category",
-      "is_concluded": true,
-	    "class_id": 1,
-      "analyst_id": 1
-    }
-  ],
-  "pending_analysis": [
-    {
-      "id": 2,
-      "batch": "1234",
-	    "made": "01-01-2021",
-	    "category": "Category",
-      "is_concluded": false,
-	    "class_id": 1,
-      "analyst_id": 1
-    }
-  ]
-}
-```
-
-Caso o usuário não esteja cadastrado, o retorno será:
-
-`GET /analysis - FORMATO DA RESPOSTA - STATUS 404`
-
-```json
-{
-  "error": "Analyst with id 1 was not found."
-}
-```
-
-Caso o usuário seja um administrador, o retorno será:
-
-`GET /analysis - FORMATO DA RESPOSTA - STATUS 401`
-
-```json
-{
-  "error": "User 1 is not a analyst."
-}
-```
-
-### Ler análise pelo ID
-
-Caso de tudo certo, o retorno será:
-
-`GET /analysis/id - FORMATO DA RESPOSTA - STATUS 200`
-
-```json
-{
-  "id": 1,
-  "batch": "123",
-	"made": "01-01-2021",
-	"category": "Category",
-  "is_concluded": false,
-	"class_id": 1,
-  "analyst_id": 1
-}
-```
-
-Caso o usuário não esteja cadastrado, o retorno será:
-
-`GET /analysis/id - FORMATO DA RESPOSTA - STATUS 404`
-
-```json
-{
-  "error": "Analyst with id 1 was not found."
-}
-```
-
-Caso o usuário seja um administrador, o retorno será:
-
-`GET /analysis/id - FORMATO DA RESPOSTA - STATUS 401`
-
-```json
-{
-  "error": "User 1 is not a analyst."
-}
-```
-
-Caso a análise não esteja cadastrada no banco de dados, o retorno será:
-
-`GET /analysis/id - FORMATO DA RESPOSTA - STATUS 404`
-
-```json
-{
-  "error": "Analysis with id 1 was not found."
-}
-```
-
-Caso o usuário não seja o responsável pela análise, o retono será:
-
-`GET /analysis/id - FORMATO DA RESPOSTA - STATUS 401`
-
-```json
-{
-  "error": "Analyst with id 1 has no access to analysis 123"
-}
-```
-
-### Atualizar análise
-
-`PATCH /analysis/id - FORMATO DA REQUISIÇÃO`
-
-```json
-{
-	"made": "02-02-2021",
-	"category": "Category",
-  "is_concluded": true,
-	"class_id": 2,
-  "analyst_id": 2  
-}
-```
-
-Caso de tudo certo, a resposta será:
-
-`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 200`
-
-```json
-{
-  "id": 1,
-	"made": "02-02-2021",
-	"category": "Category",
-  "is_concluded": true,
-	"class_id": 2,
-  "analyst_id": 2
-}
-```
-
-Caso chaves inválidas estejam no corpo da requisição, o retorno será:
-
-`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 400`
-
-```json
-{
-  "error": "One or more invalid keys were given."
-}
-```
-
-Caso chaves tenham o tipo errado na requisição, o retorno será:
-
-`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 400`
-
-```json
-{
-  "error": "One or more keys have the wrong type."
-}
-```
-
-Caso o id de classe dada não esteja cadastrada no banco de dados, o retorno será:
-
-`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 404`
-
-```json
-{
-  "error": "One or more foreign keys were not found."
-}
-```
-
-Caso o usuário não esteja cadastrado, o retorno será:
-
-`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 404`
-
-```json
-{
-  "error": "Analyst with id 1 was not found."
-}
-```
-
-Caso o usuário seja um administrador, o retorno será:
-
-`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 401`
-
-```json
-{
-  "error": "User 1 is not a analyst."
-}
-```
-
-Caso a análise não esteja cadastrada no banco de dados, o retorno será:
-
-`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 404`
-
-```json
-{
-  "error": "Analysis with id 1 was not found."
-}
-```
-
-Caso o usuário não seja o responsável pela análise, o retono será:
-
-`PATCH /analysis/id - FORMATO DA RESPOSTA - STATUS 401`
-
-```json
-{
-  "error": "Analyst with id 1 has no access to analysis 123"
-}
-```
+#### Tipo de licença - <a name="mit" href="https://opensource.org/licenses/MIT" target="_blank">MIT</a>
