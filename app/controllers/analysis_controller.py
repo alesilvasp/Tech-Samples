@@ -1,11 +1,15 @@
-from flask import jsonify, request, current_app
+from flask import jsonify, request, current_app, send_from_directory
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from datetime import datetime
 
 from app.models.analysis_model import AnalysisModel
+from app.models.classes_model import ClassModel
 from app.models.users_model import UserModel
 from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError
 
+from app.models.certificate_model import CertificateModel
+from fpdf import FPDF
 
 @jwt_required()
 def create_analysis():
@@ -129,3 +133,78 @@ def update_analysis(id: int):
     session.commit()
 
     return jsonify(analysis)
+
+
+def download_certificate(id: int):
+
+    analysis: AnalysisModel = (
+        AnalysisModel
+            .query
+            .filter_by(id=id)
+            .first()
+    )
+
+    if not analysis:
+        {'error': f'Analysis with id {id} was not found.'}, 404
+
+    if not analysis.is_concluded:
+        {'error': f'Analysis was not concluded, certificate unavailable'}, 404
+
+    analysis_class: ClassModel = (
+        ClassModel
+            .query
+            .filter_by(id=analysis.class_id)
+            .first()
+    )
+
+    analyst: UserModel = (
+        UserModel
+            .query
+            .filter_by(id=analysis.analyst_id)
+            .first()
+    )
+
+    certificate_data = {
+    "id": analysis.id,
+    "batch": analysis.batch,
+    "made": analysis.made.strftime('%d/%m/%Y'),
+    "category": analysis.category,
+    "class": {
+        "id": analysis_class.id,
+        "name": analysis_class.name,
+        "types": [{
+            "id": type.id,
+            "name": type.name,
+            "parameters": [{
+                "id": parameter.id,
+                "name": parameter.name,
+                "min": parameter.min,
+                "max": parameter.max,
+                "result": parameter.result,
+                "is_approved": parameter.is_approved,
+                "unit": parameter.unit
+                }for parameter in type.parameters],
+        }for type in analysis_class.types],
+    },
+    "analyst_name": analyst.name,
+    }
+
+    certificate = CertificateModel()
+
+    certificate.add_page()
+
+    certificate.lines()
+
+    certificate.titles()
+
+    certificate.subtitles()
+
+    certificate.logo_image()
+
+    certificate.texts(certificate_data)
+
+    certificate.output('Certificate.pdf', 'F')
+
+    certificate.close()
+
+    return send_from_directory(directory='../', path='Certificate.pdf', as_attachment=False), 200
