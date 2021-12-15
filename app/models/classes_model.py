@@ -17,13 +17,14 @@ class ClassModel(db.Model):
     admin_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     @classmethod
-    def check_data(cls, **data):
-        avaliable_keys = {'name', 'admin_id'}
-        data_keys = set(data.keys())
-        validate_keys = avaliable_keys.issubset(data_keys)
-        if validate_keys == False or len(data_keys) > 2:
+    def check_data(cls, data):
+        if not 'name' in data:
             raise InvalidInputDataError
-        if cls.query.filter_by(name=data['name']).one_or_none():
+
+        if len(data) > 1:
+            raise InvalidInputDataError
+
+        if cls.query.filter_by(name=data['name'].lower()).first():
             raise ConflictError
         ...
 

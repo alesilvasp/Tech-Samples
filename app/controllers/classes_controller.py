@@ -5,16 +5,18 @@ import sqlalchemy
 import psycopg2
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+
 @jwt_required()
 def create_class():
     logged_user = get_jwt_identity()
     data = request.json
     try:
-        
+
         if not logged_user['is_admin']:
             raise PermissionError
-        
-        new_class = ClassModel.check_data(**data)
+
+        ClassModel.check_data(data)
+        data['admin_id'] = logged_user['id']
         new_class = ClassModel(**data)
         current_app.db.session.add(new_class)
         current_app.db.session.commit()

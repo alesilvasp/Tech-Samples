@@ -1,7 +1,8 @@
 from app.configs.database import db
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
-
+from app.models.types_model import TypeModel
+from app.exceptions.types_exceptions import TypeNotFoundError
 from app.exceptions.parameters_exceptions import (
     InvalidInputDataError,
     InvalidDataTypeError
@@ -42,8 +43,16 @@ class ParameterModel(db.Model):
 
         for key in req_data:
             if key not in valid_post:
-
                 raise InvalidInputDataError
+
+        for key in valid_post:
+            if key not in req_data:
+                raise InvalidInputDataError
+
+        type_ref = TypeModel.query.filter_by(
+            id=req_data['type_id']).one_or_none()
+        if not type_ref:
+            raise TypeNotFoundError
         ...
 
     @validates('name')
