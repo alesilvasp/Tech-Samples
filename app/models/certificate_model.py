@@ -33,7 +33,6 @@ class CertificateModel(FPDF):
 
     def texts(self, analysis):
 
-        print('oi3')
         # initial position (mm)
         self.set_xy(10.0, 55.0)
         self.set_text_color(10, 54, 157)
@@ -81,7 +80,6 @@ class CertificateModel(FPDF):
 
             for parameter in type['parameters']:
                 
-                print('loop doido')
                 self.set_font('Arial', '', 16)
 
                 self.cell(w=pdf_w/4 + 10, h=16, txt=f"{parameter['name']}")

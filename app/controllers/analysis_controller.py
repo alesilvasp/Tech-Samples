@@ -145,10 +145,10 @@ def download_certificate(id: int):
     )
 
     if not analysis:
-        {'error': f'Analysis with id {id} was not found.'}, 404
+        return {'error': f'Analysis with id {id} was not found.'}, 404
 
     if not analysis.is_concluded:
-        {'error': f'Analysis was not concluded, certificate unavailable'}, 404
+        return {'error': f'Analysis was not concluded, certificate unavailable'}, 404
 
     analysis_class: ClassModel = (
         ClassModel
