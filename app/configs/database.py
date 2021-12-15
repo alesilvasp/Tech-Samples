@@ -10,6 +10,8 @@ def init_app(app: Flask):
 
     app.db = db
 
+    db.app = app
+
     from app.models.analysis_model import AnalysisModel
     from app.models.classes_model import ClassModel
     from app.models.parameters_model import ParameterModel
