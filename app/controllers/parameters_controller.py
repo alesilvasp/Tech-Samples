@@ -22,7 +22,7 @@ def create_parameter():
 
     try:
 
-        if logged_user['is_admin']:
+        if not logged_user['is_admin']:
             raise PermissionError
 
         ParameterModel.check_data(**req_data)
@@ -50,7 +50,7 @@ def delete_parameter(parameter_id: int):
 
     try:
 
-        if logged_user['is_admin']:
+        if not logged_user['is_admin']:
             raise PermissionError
 
         found_parameter = (

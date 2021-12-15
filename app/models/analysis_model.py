@@ -11,6 +11,7 @@ from app.models.users_model import UserModel
 @dataclass
 class AnalysisModel(db.Model):
     id: int
+    name: str
     batch: str
     made: datetime
     category: str
@@ -21,7 +22,8 @@ class AnalysisModel(db.Model):
     __tablename__ = 'analysis'
 
     id = db.Column(db.Integer, primary_key=True)
-    batch = db.Column(db.String, unique=True, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    batch = db.Column(db.String, nullable=False)
     made = db.Column(db.DateTime)
     category = db.Column(db.String, nullable=False)
     is_concluded = db.Column(db.Boolean)
@@ -33,6 +35,7 @@ class AnalysisModel(db.Model):
     @classmethod
     def check_data_creation(cls, token_id, **data):
         valid_keys = [
+            'name',
             'batch',
             'made',
             'category',
@@ -40,10 +43,11 @@ class AnalysisModel(db.Model):
         ]
 
         for key in data:
+            print(key)
             if key not in valid_keys:
                 raise InvalidKeysError()
 
-            if key in ['category', 'batch']:
+            if key in ['category', 'batch', 'name']:
                 if type(data[key]) != str:
                     raise TypeError()
 
@@ -58,7 +62,7 @@ class AnalysisModel(db.Model):
                     raise TypeError()
 
         for key in valid_keys:
-            if key not in data:
+            if not key in data:
                 raise MissingKeysError()
 
         analysis_class = ClassModel.query.filter_by(
@@ -75,6 +79,7 @@ class AnalysisModel(db.Model):
             'made',
             'category',
             'class_id',
+            'analyst_id',
             'is_concluded'
         ]
 
@@ -85,23 +90,17 @@ class AnalysisModel(db.Model):
             if key in ['category'] and type(data[key]) != str:
                 raise TypeError()
 
-            if key in ['class_id'] and type(data[key]) != int:
+            if key in ['class_id', 'analyst_id'] and type(data[key]) != int:
                 raise TypeError()
 
             if key in ['made']:
                 try:
-                    data[key] = datetime.strptime(data[key], '%d/%m/%Y')
+                    data[key] = datetime.strptime(data[key], '%d-%m-%Y')
                 except:
                     raise TypeError()
 
             if key in ['is_concluded'] and type(data[key]) != bool:
                 raise TypeError()
-
-            analysis_class = ClassModel.query.filter_by(
-                id=data['class_id']).first()
-
-            if not analysis_class:
-                raise ForeignKeyNotFoundError
 
     @validates('category')
     def validate_values(self, key, value: str):
