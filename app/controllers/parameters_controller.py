@@ -34,7 +34,7 @@ def create_parameter():
 
         return jsonify(new_parameter), 201
 
-    except (InvalidInputDataError, TypeNotFoundError) as err:
+    except (InvalidDataTypeError, InvalidInputDataError, TypeNotFoundError) as err:
 
         return err.message
 

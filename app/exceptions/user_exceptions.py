@@ -12,3 +12,14 @@ class EmailFormatError(Exception):
         self.message = {'error': 'Not valid email format'}, 400
 
         super().__init__(self.message)
+
+
+class InvalidUpdateDataError(Exception):
+
+    def __init__(self):
+
+        self.message = {
+            'error': 'Only the key password must be informed and it must be of type string'
+        }, 400
+
+        super().__init__(self.message)

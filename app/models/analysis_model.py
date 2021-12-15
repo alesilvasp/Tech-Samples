@@ -75,7 +75,6 @@ class AnalysisModel(db.Model):
             'made',
             'category',
             'class_id',
-            'analyst_id',
             'is_concluded'
         ]
 
@@ -86,17 +85,23 @@ class AnalysisModel(db.Model):
             if key in ['category'] and type(data[key]) != str:
                 raise TypeError()
 
-            if key in ['class_id', 'analyst_id'] and type(data[key]) != int:
+            if key in ['class_id'] and type(data[key]) != int:
                 raise TypeError()
 
             if key in ['made']:
                 try:
-                    data[key] = datetime.strptime(data[key], '%d-%m-%Y')
+                    data[key] = datetime.strptime(data[key], '%d/%m/%Y')
                 except:
                     raise TypeError()
 
             if key in ['is_concluded'] and type(data[key]) != bool:
                 raise TypeError()
+
+            analysis_class = ClassModel.query.filter_by(
+                id=data['class_id']).first()
+
+            if not analysis_class:
+                raise ForeignKeyNotFoundError
 
     @validates('category')
     def validate_values(self, key, value: str):
