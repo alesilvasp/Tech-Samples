@@ -11,6 +11,7 @@ from app.models.users_model import UserModel
 @dataclass
 class AnalysisModel(db.Model):
     id: int
+    name: str
     batch: str
     made: datetime
     category: str
@@ -21,7 +22,8 @@ class AnalysisModel(db.Model):
     __tablename__ = 'analysis'
 
     id = db.Column(db.Integer, primary_key=True)
-    batch = db.Column(db.String, unique=True, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    batch = db.Column(db.String, nullable=False)
     made = db.Column(db.DateTime)
     category = db.Column(db.String, nullable=False)
     is_concluded = db.Column(db.Boolean)
@@ -33,6 +35,7 @@ class AnalysisModel(db.Model):
     @classmethod
     def check_data_creation(cls, token_id, **data):
         valid_keys = [
+            'name',
             'batch',
             'made',
             'category',
@@ -43,7 +46,7 @@ class AnalysisModel(db.Model):
             if key not in valid_keys:
                 raise InvalidKeysError()
 
-            if key in ['category', 'batch']:
+            if key in ['category', 'batch', 'name']:
                 if type(data[key]) != str:
                     raise TypeError()
 
