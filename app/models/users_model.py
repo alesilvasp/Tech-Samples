@@ -43,8 +43,13 @@ class UserModel(db.Model):
                 raise DataContentError(key)
 
         for key in data:
-            if key not in keys:
-                raise DataContentError(key)
+            if key not in keys or type(data[key]) != str:
+                print(type(data[key]))
+                if key != 'is_admin':
+                    raise DataContentError(key)
+
+        if type(data['is_admin']) != bool:
+            raise DataContentError('is_admin')
 
     @classmethod
     def check_login_data(cls, data):
@@ -55,11 +60,13 @@ class UserModel(db.Model):
                 raise DataContentError(key)
 
         for key in data:
-            if key not in keys:
+            if key not in keys or type(data[key]) != str:
                 raise DataContentError(key)
 
     @validates('name')
     def validate_values(self, key, name: str):
+        if type(name) != str:
+            raise DataContentError(key)
         return name.lower()
 
     @validates('email')

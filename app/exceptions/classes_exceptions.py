@@ -2,7 +2,7 @@ class InvalidInputDataError(Exception):
     def __init__(self):
 
         self.message = {
-            "error": "Invalid input data keys, avaliable keys: name, admin_id"
+            "error": "Invalid input data key, key must be 'name'"
         }, 400
 
         super().__init__(self.message)
