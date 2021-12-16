@@ -146,9 +146,36 @@ def update_analysis(id: int):
     if analysis.analyst_id != analyst.id:
         return {'error': f'Analyst with id {analyst.id} has no access to analysis {id}'}, 401
 
-    for key in data:
-        setattr(analysis, key, data[key])
+    type = data.pop('type_to_update')
+    parameter = data.pop('parameter_to_update')
+    result = data.pop('result')
 
+    new_classe = analysis.classe.copy()
+
+    for ty in new_classe["types"]:
+        if ty["type_name"] == type:
+        
+            for par in ty["parameters"]:
+                if par["parameter_name"] == parameter:
+                    par["result"] = result
+
+                    if par["result"] != "":
+                        if float(result) > float(par["min"]) and float(result) < float(par["max"]):
+                            par["is_approved"] = True
+                            
+                    break
+
+    concluded = True
+    for ty in new_classe["types"]:
+        for par in ty["parameters"]:
+            if par["result"] == "":
+                concluded = False
+                break
+
+    AnalysisModel.query.filter_by(id=id).update(dict(is_concluded=concluded))
+    session.commit()
+
+    AnalysisModel.query.filter_by(id=id).update(dict(classe=new_classe))
     session.commit()
 
     return jsonify(analysis)

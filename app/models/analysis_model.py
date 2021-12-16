@@ -1,3 +1,4 @@
+from flask import json
 from app.configs.database import db
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
@@ -16,7 +17,7 @@ class AnalysisModel(db.Model):
     made: datetime
     category: str
     is_concluded: bool
-    classe: list
+    classe: dict
     analyst_id: int
 
     __tablename__ = 'analysis'
@@ -49,8 +50,8 @@ class AnalysisModel(db.Model):
                 if type(data[key]) != str:
                     raise TypeError()
 
-            if key in ['class']:
-                if type(data[key]) != list:
+            if key in ['classe']:
+                if type(data[key]) != dict:
                     raise TypeError()
 
             if key in ['made']:
@@ -75,7 +76,10 @@ class AnalysisModel(db.Model):
             'made',
             'category',
             'classe',
-            'is_concluded'
+            'is_concluded',
+            'type_to_update',
+            'parameter_to_update',
+            'result',
         ]
 
         for key in data:
