@@ -18,12 +18,24 @@ def create_analysis():
         .filter_by(id=data['class_id'])
         .first()
     )
-    classe = {'class_name': found_class.name,
-              'class_id': found_class.id, 'class_types': found_class.types[0]}
-    print(classe)
-    print(classe['class_types'])
-    # data['classe'] = json.dumps(vars(found_class))
-    # del data['class_id']
+    classe = {
+        'class_name': found_class.name,
+        'class_id': found_class.id,
+        'types': [{
+            'type_name': type.name,
+            'parameters': [{
+                'parameter_name': parameter.name,
+                'min': parameter.min,
+                'max': parameter.max,
+                'unit': parameter.unit,
+                'result': parameter.result,
+                'is_approved': parameter.is_approved,
+            } for parameter in type.parameters],
+        } for type in found_class.types],
+    }
+
+    data['classe'] = classe
+    del data['class_id']
     analyst = get_jwt_identity()
     analyst_id = analyst['id']
     analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
