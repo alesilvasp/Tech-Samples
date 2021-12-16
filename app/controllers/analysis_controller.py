@@ -1,9 +1,10 @@
 from flask import jsonify, request, current_app
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, get_jwt_identity
-
+import json
 from app.models.analysis_model import AnalysisModel
 from app.models.users_model import UserModel
+from app.models.classes_model import ClassModel
 from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError
 
 
@@ -11,16 +12,26 @@ from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysErro
 def create_analysis():
     data = request.json
     session = current_app.db.session
-
+    found_class = (
+        ClassModel
+        .query
+        .filter_by(id=data['class_id'])
+        .first()
+    )
+    classe = {'class_name': found_class.name,
+              'class_id': found_class.id, 'class_types': found_class.types[0]}
+    print(classe)
+    print(classe['class_types'])
+    # data['classe'] = json.dumps(vars(found_class))
+    # del data['class_id']
     analyst = get_jwt_identity()
     analyst_id = analyst['id']
     analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
-    
+
     try:
         AnalysisModel.check_data_creation(analyst_id, **data)
     except (InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError) as err:
         return err.message
-
 
     if not analyst:
         return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
@@ -97,7 +108,7 @@ def read_by_id_analysis(id: int):
 def update_analysis(id: int):
     data = request.json
     session = current_app.db.session
-    
+
     analyst = get_jwt_identity()
     analyst_id = analyst['id']
     analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()

@@ -2,7 +2,7 @@ from app.configs.database import db
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
 from datetime import datetime
-
+from sqlalchemy.dialects.postgresql import JSON
 from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError
 from app.models.classes_model import ClassModel
 from app.models.users_model import UserModel
@@ -16,7 +16,7 @@ class AnalysisModel(db.Model):
     made: datetime
     category: str
     is_concluded: bool
-    class_id: int
+    classe: list
     analyst_id: int
 
     __tablename__ = 'analysis'
@@ -27,8 +27,7 @@ class AnalysisModel(db.Model):
     made = db.Column(db.DateTime)
     category = db.Column(db.String, nullable=False)
     is_concluded = db.Column(db.Boolean)
-
-    class_id = db.Column(db.Integer, db.ForeignKey('classes.id'))
+    classe = db.Column(JSON)
 
     analyst_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
@@ -39,7 +38,7 @@ class AnalysisModel(db.Model):
             'batch',
             'made',
             'category',
-            'class_id',
+            'classe',
         ]
 
         for key in data:
@@ -50,8 +49,8 @@ class AnalysisModel(db.Model):
                 if type(data[key]) != str:
                     raise TypeError()
 
-            if key in ['class_id']:
-                if type(data[key]) != int:
+            if key in ['class']:
+                if type(data[key]) != list:
                     raise TypeError()
 
             if key in ['made']:
@@ -64,12 +63,10 @@ class AnalysisModel(db.Model):
             if key not in data:
                 raise MissingKeysError()
 
-        analysis_class = ClassModel.query.filter_by(
-            id=data['class_id']).first()
         analysis_analyst = UserModel.query.filter_by(
             id=token_id).first()
 
-        if not analysis_analyst or not analysis_class:
+        if not analysis_analyst:
             raise ForeignKeyNotFoundError()
 
     @classmethod
@@ -77,7 +74,7 @@ class AnalysisModel(db.Model):
         valid_keys = [
             'made',
             'category',
-            'class_id',
+            'classe',
             'is_concluded'
         ]
 
@@ -88,9 +85,6 @@ class AnalysisModel(db.Model):
             if key in ['category'] and type(data[key]) != str:
                 raise TypeError()
 
-            if key in ['class_id'] and type(data[key]) != int:
-                raise TypeError()
-
             if key in ['made']:
                 try:
                     data[key] = datetime.strptime(data[key], '%d/%m/%Y')
@@ -99,12 +93,6 @@ class AnalysisModel(db.Model):
 
             if key in ['is_concluded'] and type(data[key]) != bool:
                 raise TypeError()
-
-            analysis_class = ClassModel.query.filter_by(
-                id=data['class_id']).first()
-
-            if not analysis_class:
-                raise ForeignKeyNotFoundError
 
     @validates('category')
     def validate_values(self, key, value: str):
