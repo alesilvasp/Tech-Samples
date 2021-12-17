@@ -23,3 +23,12 @@ class InvalidUpdateDataError(Exception):
         }, 400
 
         super().__init__(self.message)
+
+
+class EmailConflictError(Exception):
+
+    def __init__(self):
+
+        self.message = {'error': 'Email already registred'}, 409
+
+        super().__init__(self.message)

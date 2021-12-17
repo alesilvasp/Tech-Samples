@@ -5,7 +5,6 @@ from app.models.parameters_model import ParameterModel
 from app.exceptions.parameters_exceptions import (
     InvalidInputDataError,
     InvalidDataTypeError,
-    InvalidUpdateDataError,
     ParametersNotFoundError
 )
 from flask_jwt_extended import jwt_required, get_jwt_identity

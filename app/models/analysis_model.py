@@ -1,11 +1,9 @@
-from flask import json
 from app.configs.database import db
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
 from datetime import datetime
 from sqlalchemy.dialects.postgresql import JSON
 from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError
-from app.models.classes_model import ClassModel
 from app.models.users_model import UserModel
 
 
