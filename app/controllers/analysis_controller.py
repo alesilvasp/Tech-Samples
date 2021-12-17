@@ -145,10 +145,23 @@ def update_analysis(id: int):
 
     if analysis.analyst_id != analyst.id:
         return {'error': f'Analyst with id {analyst.id} has no access to analysis {id}'}, 401
+    
+    
+    print(data.items())
+    # to_update = data['classe']['types'][0]['parameters'][0]
+    # to_update2 = data['classe']['types'][1]['parameters'][0]
+    # print(to_update2)
 
-    for key in data:
-        setattr(analysis, key, data[key])
+    # analysis.classe['types'][0]['parameters'][0].update(to_update)
+    # analysis.classe['types'][1]['parameters'][0].update(to_update2)
+    # print('-' * 50)
+    # print(analysis.classe)
+    return ''
+    # for key in data:
+    #     setattr(analysis, key, data[key])
+    
+    # analysis.update(analysis.classe)
 
-    session.commit()
+    # session.commit()
 
-    return jsonify(analysis)
+    # return jsonify(analysis)
