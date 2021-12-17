@@ -159,15 +159,15 @@ def update_analysis(id: int):
 
     for ty in new_classe["types"]:
         if ty["type_name"] == type:
-        
+
             for par in ty["parameters"]:
                 if par["parameter_name"] == parameter:
                     par["result"] = result
 
                     if par["result"] != "":
-                        if float(result) > float(par["min"]) and float(result) < float(par["max"]):
+                        if float(result) >= float(par["min"]) and float(result) <= float(par["max"]):
                             par["is_approved"] = True
-                            
+
                     break
 
     concluded = True

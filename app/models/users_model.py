@@ -2,7 +2,7 @@ from app.configs.database import db
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.exceptions.user_exceptions import DataContentError, EmailFormatError
+from app.exceptions.user_exceptions import DataContentError, EmailConflictError, EmailFormatError
 import re
 
 
@@ -44,12 +44,14 @@ class UserModel(db.Model):
 
         for key in data:
             if key not in keys or type(data[key]) != str:
-                print(type(data[key]))
                 if key != 'is_admin':
                     raise DataContentError(key)
 
         if type(data['is_admin']) != bool:
             raise DataContentError('is_admin')
+
+        if cls.query.filter_by(email=data['email'].lower()).one_or_none():
+            raise EmailConflictError
 
     @classmethod
     def check_login_data(cls, data):
