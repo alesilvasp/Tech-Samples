@@ -1,8 +1,7 @@
-import sqlalchemy
 from flask import request, current_app, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from app.exceptions.user_exceptions import DataContentError, EmailFormatError, InvalidUpdateDataError
+from app.exceptions.user_exceptions import DataContentError, EmailConflictError, EmailFormatError, InvalidUpdateDataError
 from app.models.users_model import UserModel
 from app.utils.email import send_login_information
 
@@ -22,10 +21,8 @@ def create_user_admin():
 
         return jsonify(new_admin), 201
 
-    except (DataContentError, EmailFormatError) as err:
+    except (DataContentError, EmailConflictError, EmailFormatError) as err:
         return err.message
-    except sqlalchemy.exc.IntegrityError as err:
-        return {"error": "Email already registred"}, 409
 
 
 @jwt_required()
@@ -51,10 +48,8 @@ def create_user_analyst():
 
         return jsonify(new_analyst), 201
 
-    except (DataContentError, EmailFormatError) as err:
+    except (DataContentError, EmailConflictError, EmailFormatError) as err:
         return err.message
-    except sqlalchemy.exc.IntegrityError as err:
-        return {"error": "Email already registred"}, 409
     except PermissionError as err:
         return {"error": "User not allowed"}, 403
 

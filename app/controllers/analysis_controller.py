@@ -1,7 +1,6 @@
 from flask import jsonify, request, current_app
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, get_jwt_identity
-import json
 from app.models.analysis_model import AnalysisModel
 from app.models.users_model import UserModel
 from app.models.classes_model import ClassModel
