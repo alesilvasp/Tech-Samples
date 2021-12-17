@@ -1,11 +1,17 @@
-from flask import jsonify, request, current_app
+from flask import jsonify, request, current_app, send_from_directory
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from datetime import datetime
+
+import json
 from app.models.analysis_model import AnalysisModel
+from app.models.classes_model import ClassModel
 from app.models.users_model import UserModel
 from app.models.classes_model import ClassModel
 from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError
 
+from app.models.certificate_model import CertificateModel
+from fpdf import FPDF
 
 @jwt_required()
 def create_analysis():
@@ -178,3 +184,49 @@ def update_analysis(id: int):
     session.commit()
 
     return jsonify(analysis)
+
+
+def download_certificate(id: int):
+
+    analysis: AnalysisModel = (
+        AnalysisModel
+            .query
+            .filter_by(id=id)
+            .first()
+    )
+
+    if not analysis:
+        return {'error': f'Analysis with id {id} was not found.'}, 404
+
+    if not analysis.is_concluded:
+        return {'error': f'Analysis was not concluded, certificate unavailable'}, 404
+
+    analyst: UserModel = (
+        UserModel
+            .query
+            .filter_by(id=analysis.analyst_id)
+            .first()
+    )
+
+    analysis_data = analysis.__dict__
+    analysis_data['made'] = analysis.made.strftime("%d/%m/%Y")
+
+    certificate = CertificateModel()
+
+    certificate.add_page()
+
+    certificate.lines()
+
+    certificate.titles()
+
+    certificate.subtitles()
+
+    certificate.logo_image()
+
+    certificate.texts(analyst.name, analysis_data)
+
+    certificate.output('Certificate.pdf', 'F')
+
+    certificate.close()
+
+    return send_from_directory(directory='../', path='Certificate.pdf', as_attachment=False), 200
