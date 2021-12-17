@@ -21,7 +21,7 @@ O projeto foi desenvolvido no terceiro módulo curso de Desenvolvimento Full Sta
 
 ## 2. Links Relevantes
 
-- <a name="documentação-api" href="https://documenter.getpostman.com/view/18741402/UVR4PANK" target="_blank">Documentação API</a>
+- <a name="documentação-api" href="https://documenter.getpostman.com/view/18741402/UVR8q88w" target="_blank">Documentação API</a>
 
 <a name="problema"></a>
 
