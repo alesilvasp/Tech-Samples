@@ -1,8 +1,9 @@
+from flask import json
 from app.configs.database import db
 from dataclasses import dataclass
 from sqlalchemy.orm import validates
 from datetime import datetime
-
+from sqlalchemy.dialects.postgresql import JSON
 from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError
 from app.models.classes_model import ClassModel
 from app.models.users_model import UserModel
@@ -11,44 +12,46 @@ from app.models.users_model import UserModel
 @dataclass
 class AnalysisModel(db.Model):
     id: int
+    name: str
     batch: str
     made: datetime
     category: str
     is_concluded: bool
-    class_id: int
+    classe: dict
     analyst_id: int
 
     __tablename__ = 'analysis'
 
     id = db.Column(db.Integer, primary_key=True)
-    batch = db.Column(db.String, unique=True, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    batch = db.Column(db.String, nullable=False)
     made = db.Column(db.DateTime)
     category = db.Column(db.String, nullable=False)
     is_concluded = db.Column(db.Boolean)
-
-    class_id = db.Column(db.Integer, db.ForeignKey('classes.id'))
+    classe = db.Column(JSON)
 
     analyst_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     @classmethod
     def check_data_creation(cls, token_id, **data):
         valid_keys = [
+            'name',
             'batch',
             'made',
             'category',
-            'class_id',
+            'classe',
         ]
 
         for key in data:
             if key not in valid_keys:
                 raise InvalidKeysError()
 
-            if key in ['category', 'batch']:
+            if key in ['category', 'batch', 'name']:
                 if type(data[key]) != str:
                     raise TypeError()
 
-            if key in ['class_id']:
-                if type(data[key]) != int:
+            if key in ['classe']:
+                if type(data[key]) != dict:
                     raise TypeError()
 
             if key in ['made']:
@@ -61,12 +64,10 @@ class AnalysisModel(db.Model):
             if key not in data:
                 raise MissingKeysError()
 
-        analysis_class = ClassModel.query.filter_by(
-            id=data['class_id']).first()
         analysis_analyst = UserModel.query.filter_by(
             id=token_id).first()
 
-        if not analysis_analyst or not analysis_class:
+        if not analysis_analyst:
             raise ForeignKeyNotFoundError()
 
     @classmethod
@@ -74,8 +75,11 @@ class AnalysisModel(db.Model):
         valid_keys = [
             'made',
             'category',
-            'class_id',
-            'is_concluded'
+            'classe',
+            'is_concluded',
+            'type_to_update',
+            'parameter_to_update',
+            'result',
         ]
 
         for key in data:
@@ -83,9 +87,6 @@ class AnalysisModel(db.Model):
                 raise InvalidKeysError()
 
             if key in ['category'] and type(data[key]) != str:
-                raise TypeError()
-
-            if key in ['class_id'] and type(data[key]) != int:
                 raise TypeError()
 
             if key in ['made']:
@@ -96,12 +97,6 @@ class AnalysisModel(db.Model):
 
             if key in ['is_concluded'] and type(data[key]) != bool:
                 raise TypeError()
-
-            analysis_class = ClassModel.query.filter_by(
-                id=data['class_id']).first()
-
-            if not analysis_class:
-                raise ForeignKeyNotFoundError
 
     @validates('category')
     def validate_values(self, key, value: str):

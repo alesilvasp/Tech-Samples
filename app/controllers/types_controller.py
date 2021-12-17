@@ -5,12 +5,13 @@ import sqlalchemy
 import psycopg2
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+
 @jwt_required()
 def create_type():
     logged_user = get_jwt_identity()
     data = request.json
     try:
-        if logged_user['is_admin']:
+        if not logged_user['is_admin']:
             raise PermissionError
         TypeModel.check_data(**data)
         new_type = TypeModel(**data)
@@ -25,12 +26,13 @@ def create_type():
     except PermissionError as err:
         return {"error": "User not allowed"}, 403
 
+
 @jwt_required()
 def update_type(type_id: int):
     logged_user = get_jwt_identity()
     data = request.json
     try:
-        if logged_user['is_admin']:
+        if not logged_user['is_admin']:
             raise PermissionError
         avaliable_keys = {'name'}
         data_keys = set(data.keys())

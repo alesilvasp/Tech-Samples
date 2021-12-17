@@ -3,9 +3,11 @@ from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 
+import json
 from app.models.analysis_model import AnalysisModel
 from app.models.classes_model import ClassModel
 from app.models.users_model import UserModel
+from app.models.classes_model import ClassModel
 from app.exceptions.analysis_exceptions import InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError
 
 from app.models.certificate_model import CertificateModel
@@ -15,16 +17,38 @@ from fpdf import FPDF
 def create_analysis():
     data = request.json
     session = current_app.db.session
+    found_class = (
+        ClassModel
+        .query
+        .filter_by(id=data['class_id'])
+        .first()
+    )
+    classe = {
+        'class_name': found_class.name,
+        'class_id': found_class.id,
+        'types': [{
+            'type_name': type.name,
+            'parameters': [{
+                'parameter_name': parameter.name,
+                'min': parameter.min,
+                'max': parameter.max,
+                'unit': parameter.unit,
+                'result': parameter.result,
+                'is_approved': parameter.is_approved,
+            } for parameter in type.parameters],
+        } for type in found_class.types],
+    }
 
+    data['classe'] = classe
+    del data['class_id']
     analyst = get_jwt_identity()
     analyst_id = analyst['id']
     analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
-    
+
     try:
         AnalysisModel.check_data_creation(analyst_id, **data)
     except (InvalidKeysError, MissingKeysError, TypeError, ForeignKeyNotFoundError) as err:
         return err.message
-
 
     if not analyst:
         return {'error': f'Analyst with id {analyst_id} was not found.'}, 404
@@ -101,7 +125,7 @@ def read_by_id_analysis(id: int):
 def update_analysis(id: int):
     data = request.json
     session = current_app.db.session
-    
+
     analyst = get_jwt_identity()
     analyst_id = analyst['id']
     analyst: UserModel = UserModel.query.filter_by(id=analyst_id).first()
@@ -127,9 +151,36 @@ def update_analysis(id: int):
     if analysis.analyst_id != analyst.id:
         return {'error': f'Analyst with id {analyst.id} has no access to analysis {id}'}, 401
 
-    for key in data:
-        setattr(analysis, key, data[key])
+    type = data.pop('type_to_update')
+    parameter = data.pop('parameter_to_update')
+    result = data.pop('result')
 
+    new_classe = analysis.classe.copy()
+
+    for ty in new_classe["types"]:
+        if ty["type_name"] == type:
+        
+            for par in ty["parameters"]:
+                if par["parameter_name"] == parameter:
+                    par["result"] = result
+
+                    if par["result"] != "":
+                        if float(result) > float(par["min"]) and float(result) < float(par["max"]):
+                            par["is_approved"] = True
+                            
+                    break
+
+    concluded = True
+    for ty in new_classe["types"]:
+        for par in ty["parameters"]:
+            if par["result"] == "":
+                concluded = False
+                break
+
+    AnalysisModel.query.filter_by(id=id).update(dict(is_concluded=concluded))
+    session.commit()
+
+    AnalysisModel.query.filter_by(id=id).update(dict(classe=new_classe))
     session.commit()
 
     return jsonify(analysis)
@@ -150,13 +201,6 @@ def download_certificate(id: int):
     if not analysis.is_concluded:
         return {'error': f'Analysis was not concluded, certificate unavailable'}, 404
 
-    analysis_class: ClassModel = (
-        ClassModel
-            .query
-            .filter_by(id=analysis.class_id)
-            .first()
-    )
-
     analyst: UserModel = (
         UserModel
             .query
@@ -164,30 +208,8 @@ def download_certificate(id: int):
             .first()
     )
 
-    certificate_data = {
-    "id": analysis.id,
-    "batch": analysis.batch,
-    "made": analysis.made.strftime('%d/%m/%Y'),
-    "category": analysis.category,
-    "class": {
-        "id": analysis_class.id,
-        "name": analysis_class.name,
-        "types": [{
-            "id": type.id,
-            "name": type.name,
-            "parameters": [{
-                "id": parameter.id,
-                "name": parameter.name,
-                "min": parameter.min,
-                "max": parameter.max,
-                "result": parameter.result,
-                "is_approved": parameter.is_approved,
-                "unit": parameter.unit
-                }for parameter in type.parameters],
-        }for type in analysis_class.types],
-    },
-    "analyst_name": analyst.name,
-    }
+    analysis_data = analysis.__dict__
+    analysis_data['made'] = analysis.made.strftime("%d/%m/%Y")
 
     certificate = CertificateModel()
 
@@ -201,7 +223,7 @@ def download_certificate(id: int):
 
     certificate.logo_image()
 
-    certificate.texts(certificate_data)
+    certificate.texts(analyst.name, analysis_data)
 
     certificate.output('Certificate.pdf', 'F')
 

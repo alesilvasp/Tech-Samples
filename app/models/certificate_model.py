@@ -15,7 +15,7 @@ class CertificateModel(FPDF):
         self.set_xy(0.0, 5.0)
         self.set_font('Arial', 'B', 32)
         self.set_text_color(10, 54, 157)
-        self.cell(w=210.0, h=40.0, align='C', txt="Nome da empresa", border=0)
+        self.cell(w=210.0, h=40.0, align='C', txt="Laudo de análise", border=0)
 
     def logo_image(self):
 
@@ -31,14 +31,14 @@ class CertificateModel(FPDF):
         self.set_text_color(10, 54, 157)
         self.cell(w=210.0, h=60.0, align='C', txt="Dados da amostra", border=0)
 
-    def texts(self, analysis):
+    def texts(self, analyst_name, analysis):
 
         # initial position (mm)
         self.set_xy(10.0, 55.0)
         self.set_text_color(10, 54, 157)
         self.set_font('Arial', '', 16)
 
-        self.cell(w=pdf_w/2, h=10.0, txt=f"Classe do Produto: {analysis['class']['name']} + 'IASDIOAOISDJAOISDJOIASJDIOJA'")
+        self.cell(w=pdf_w/2, h=10.0, txt=f"Produto: {analysis['name']}")
         self.cell(w=pdf_w/2, h=10.0, txt=f"Laudo N°: {analysis['id']}")
         
         self.ln(10)
@@ -70,19 +70,17 @@ class CertificateModel(FPDF):
         # analysis results
         self.set_text_color(10, 54, 157)
 
-        for type in analysis['class']['types']:
-
+        for type in analysis['classe']['types']:
             self.set_font('Arial', 'B', 24)
             
-            self.cell(w=0, h=24, txt=f"{type['name']}", align='C')
+            self.cell(w=0, h=24, txt=f"{type['type_name']}", align='C')
 
             self.ln(16)
 
             for parameter in type['parameters']:
-                
                 self.set_font('Arial', '', 16)
 
-                self.cell(w=pdf_w/4 + 10, h=16, txt=f"{parameter['name']}")
+                self.cell(w=pdf_w/4 + 10, h=16, txt=f"{parameter['parameter_name']}")
 
                 self.cell(w=pdf_w/4, h=16, txt=f"{parameter['result']}")
 
@@ -98,4 +96,4 @@ class CertificateModel(FPDF):
         self.ln(10)
 
         self.set_font('Arial', 'B', 24)
-        self.cell(w=0, h=24, txt=f"Responsável técnico: {analysis['analyst_name']}" )
+        self.cell(w=0, h=24, txt=f"Responsável técnico: {analyst_name}" )
